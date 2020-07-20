@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {CustomInput, Form, FormGroup, FormText, Label, Input, Button, Alert, Col, Row} from 'reactstrap';
 import {getCookie} from "./Utils";
 import * as cnst from "./Const"
+import * as firebase from "firebase";
 
 /**
  * Uses a form to post information about a new event bring created.
@@ -20,7 +21,14 @@ class createQuestion extends Component {
             teams: '',
             judges: '',
             criteria: '',
-            subtopics:[]
+            subtopics:[],
+            paperType: 1,
+            year: 2020,
+            session: 'May',
+            topic: 1,
+            subtopicQuestionPair: {},
+            questionImages: [],
+            answerImages: []
         }
     }
 
@@ -37,7 +45,14 @@ class createQuestion extends Component {
             name: '',
             date: '',
             time: '',
-            teams: ''
+            teams: '',
+            paperType: 1,
+            year: 2020,
+            session: 'May',
+            topic: 1,
+            subtopicQuestionPair: {},
+            questionImages: [],
+            answerImages: []
         })
     }
 
@@ -105,7 +120,7 @@ class createQuestion extends Component {
                         <Col md={4}>
                             <FormGroup>
                                 <Label for="sessionSelect">Subtopic</Label>
-                                <Input type="select" name="select" id="sessionSelect">
+                                <Input type="select" name="select" id="sessionSelect" value={this.state.session}>
                                     <option>1.1.1</option>
                                     <option>1.1.2</option>
                                     <option>1.1.3</option>
@@ -121,24 +136,117 @@ class createQuestion extends Component {
         )
     }
 
+    uploadData = () => {
+        const db = firebase.firestore();
+        console.log("uploadData()");
+        console.log("paperType: " + this.state.paperType);
+        console.log("year: " + this.state.year);
+        console.log("session: " + this.state.session);
+        console.log("topic: " + this.state.topic);
+        //https://stackoverflow.com/a/46748716
+        
+        const newQuestionRef = db.collection("questions").doc();
+        const key = newQuestionRef.id;
+        newQuestionRef.set({
+            paperType: this.state.paperType,
+            year: this.state.year,
+            session: this.state.session,
+            topic: this.state.topic
+        });
+        return key;
+    }
+
+    uploadImages = (key) => {
+        console.log("uploadImages(), questionImages: " + this.state.questionImages);
+        console.log("uploadImages(), answerImages: " + this.state.answerImages);
+        //https://stackoverflow.com/questions/61215555/how-to-upload-image-to-firebase-storage-and-upload-url-to-firestore-simultaneous
+        const storage = firebase.storage();
+
+        this.state.questionImages.forEach((image, index) => {
+            const imageRefName = `questions/${Date.now()}`;
+            const uploadTask = storage.ref(imageRefName).put(image);
+            uploadTask.on('state_changed',
+            () => {},
+            (error) => {
+                // error function ....
+                console.log(error);
+            },
+            () => {
+                //https://stackoverflow.com/a/43396448
+                var imgUrl = "questionImgUrl" + index;
+                storage.ref(imageRefName).getDownloadURL().then(url => {
+                    console.log("got download URL");
+                    firebase
+                    .firestore()
+                    .collection(`questions`).doc(key)
+                    .update({
+                        [imgUrl]: url
+                    })
+                })
+            });
+        })
+
+        this.state.answerImages.forEach((image, index) => {
+            const imageRefName = `answers/${Date.now()}`;
+            const uploadTask = storage.ref(imageRefName).put(image);
+            uploadTask.on('state_changed',
+            () => {},
+            (error) => {
+                // error function ....
+                console.log(error);
+            },
+            () => {
+                //https://stackoverflow.com/a/43396448
+                var imgUrl = "answerImgUrl" + index;
+                storage.ref(imageRefName).getDownloadURL().then(url => {
+                    console.log("got download URL");
+                    firebase
+                    .firestore()
+                    .collection(`questions`).doc(key)
+                    .update({
+                        [imgUrl]: url
+                    })
+                })
+            });
+        })
+        
+        
+    }
+
+    submitForm = e => {
+        e.preventDefault();
+        console.log("button pressed");
+
+        const dataKey = this.uploadData();
+        this.uploadImages(dataKey);
+          //this.clearInputFields(e); TODO: SHOULD I CALL THIS OR NOT?  BECAUSE UI DISPLAY IS NOT CLEARED
+    }
+
     render() {
         return (
             <div className="create-form-container">
-                <Form>
+                <Form onSubmit={(event)=>this.submitForm(event)}>
                     <Row form>
                         <Col md={3}>
                             <FormGroup>
                                 <Label for="paperTypeSelect">Paper Type</Label>
-                                <Input type="select" name="select" id="paperTypeSelect">
-                                    <option>Paper 1</option>
-                                    <option>Paper 2</option>
-                                    <option>Paper 3</option>
+                                <Input type="select" name="select" id="paperTypeSelect" 
+                                onChange={(event)=> {
+                                    this.state.paperType = event.target.value;
+                                }}>
+                                    <option value="1" >Paper 1</option>
+                                    <option value="2">Paper 2</option>
+                                    <option value="3">Paper 3</option>
                                 </Input>
                             </FormGroup>
                         </Col>
                         <Col md={3}>
                             <Label for="yearSelect">Year</Label>
-                            <Input type="select" name="select" id="yearSelect">
+                            <Input type="select" name="select" id="yearSelect" onChange={(event)=> {
+                                    this.setState({
+                                        year: event.target.value
+                                      })
+                                }}>
                                 <option>2020</option>
                                 <option>2019</option>
                                 <option>2018</option>
@@ -155,16 +263,24 @@ class createQuestion extends Component {
                         <Col md={3}>
                             <FormGroup>
                                 <Label for="sessionSelect">Session</Label>
-                                <Input type="select" name="select" id="sessionSelect">
-                                    <option>May</option>
-                                    <option>November</option>
+                                <Input type="select" name="select" id="sessionSelect" onChange={(event)=> {
+                                    this.setState({
+                                        session: event.target.value
+                                      })
+                                }}>
+                                    <option value="May">May</option>
+                                    <option value="Nov">November</option>
                                 </Input>
                             </FormGroup>
                         </Col>
                         <Col md={3}>
                             <FormGroup>
-                                <Label for="sessionSelect">Topic</Label>
-                                <Input type="select" name="select" id="sessionSelect">
+                                <Label for="topicSelect">Topic</Label>
+                                <Input type="select" name="select" id="topicSelect" onChange={(event)=> {
+                                    this.setState({
+                                        topic: event.target.value
+                                      })
+                                }}>
                                     <option>1: System Fundamentals</option>
                                     <option>2: Computer Organization</option>
                                     <option>3: Networks</option>
@@ -184,15 +300,40 @@ class createQuestion extends Component {
                     <Button color="primary" onClick={() => this.addField(cnst.SCENARIO)}>Add Subtopic</Button>
                     <Button color="danger" onClick={() => this.addField(cnst.SCENARIO)}>Remove Subtopic</Button>
                     <FormGroup>
-                        <Label for="exampleCustomFileBrowser">Scenario Image</Label>
+                        <Label for="exampleCustomFileBrowser">Question Image</Label>
                         <CustomInput type="file"
+                                    multiple
                                      id="exampleCustomFileBrowser"
                                      name="customFile"
-                                     label="Pick an image file"
+                                     label="Pick image files for the question"
+                                     onChange={
+                                        (event)=> {
+                                            this.setState({
+                                                questionImages: [...this.state.questionImages, ...event.target.files]
+                                            })
+                                        }
+                                     }
                         />
                     </FormGroup>
+                    <FormGroup>
+                        <Label for="exampleCustomFileBrowser">Answer Image</Label>
+                        <CustomInput type="file"
+                                    multiple
+                                     id="exampleCustomFileBrowser"
+                                     name="customFile"
+                                     label="Pick image files for the answers"
+                                     onChange={
+                                        (event)=> {
+                                            this.setState({
+                                                answerImages: [...this.state.answerImages, ...event.target.files]
+                                            })
+                                        }
+                                     }
+                        />
+                    </FormGroup>
+                    <Button color="primary" type="submit">Save Question</Button>
                 </Form>
-                <Button color="primary" >Save Question</Button>
+                
             </div>
         );
     }
