@@ -34,10 +34,6 @@ class createQuestion extends Component {
     useInput = (idx, e) => {
         let newFields = this.state.fields;
         newFields[idx].content = e.target.value;
-        console.log("This is the field updated: ");
-        console.log(newFields[idx].content);
-        console.log(e.target.value);
-        console.log(this.state.fields);
 
         this.setState({
             fields: newFields,
@@ -136,7 +132,6 @@ class createQuestion extends Component {
                                          id="exampleCustomFileBrowser"
                                          name="customFile"
                                          label="Pick an image file"
-                                         onChange={(e) => this.useInput(idx, e) }
                             />
 
                         </FormGroup>
@@ -185,7 +180,7 @@ class createQuestion extends Component {
             <div className="create-form-container">
                 <Form onSubmit={this.submitQuestion}>
                     <Row form>
-                        <Col md={4}>
+                        <Col md={3}>
                             <FormGroup>
                                 <Label for="paperTypeSelect">Paper Type</Label>
                                 <Input type="select" name="select" id="paperTypeSelect">
@@ -195,7 +190,7 @@ class createQuestion extends Component {
                                 </Input>
                             </FormGroup>
                         </Col>
-                        <Col md={4}>
+                        <Col md={3}>
                             <Label for="yearSelect">Year</Label>
                             <Input type="select" name="select" id="yearSelect">
                                 <option>2020</option>
@@ -211,7 +206,7 @@ class createQuestion extends Component {
                                 <option>2010</option>
                             </Input>
                         </Col>
-                        <Col md={4}>
+                        <Col md={3}>
                             <FormGroup>
                                 <Label for="sessionSelect">Session</Label>
                                 <Input type="select" name="select" id="sessionSelect">
@@ -220,7 +215,31 @@ class createQuestion extends Component {
                                 </Input>
                             </FormGroup>
                         </Col>
+                        <Col md={3}>
+                            <FormGroup>
+                                <Label for="sessionSelect">Topic</Label>
+                                <Input type="select" name="select" id="sessionSelect">
+                                    <option>1: System Fundamentals</option>
+                                    <option>2: Computer Organization</option>
+                                    <option>3: Networks</option>
+                                    <option>4: Computational Thinking</option>
+                                    <option>5: Abstract Data Structures</option>
+                                    <option>6: Resource Management</option>
+                                    <option>7: Control</option>
+                                </Input>
+                            </FormGroup>
+                        </Col>
                     </Row>
+
+                    <FormGroup>
+                            <Label for="exampleCustomFileBrowser">Scenario Image</Label>
+                            <CustomInput type="file"
+                                         id="exampleCustomFileBrowser"
+                                         name="customFile"
+                                         label="Pick an image file"
+                            />
+                        </FormGroup>
+
                     {this.createFields()}
                 </Form>
                 <Button color="primary" onClick={() => this.addField(cnst.SCENARIO)}>Add Scenario</Button>
