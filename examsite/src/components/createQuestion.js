@@ -20,25 +20,11 @@ class createQuestion extends Component {
             teams: '',
             judges: '',
             criteria: '',
-            fields: [],
+            subtopics:[]
         }
     }
 
-    /**
-     * methods starting with use are needed to handle input information
-     * into the form fields
-     *
-     * @param e the event calling these methods
-     * @public
-     */
-    useInput = (idx, e) => {
-        let newFields = this.state.fields;
-        newFields[idx].content = e.target.value;
 
-        this.setState({
-            fields: newFields,
-        })
-    };
 
     /**
      * Clears all form fields
@@ -53,11 +39,6 @@ class createQuestion extends Component {
             time: '',
             teams: ''
         })
-    }
-
-
-    submitQuestion = (e) => {
-        e.preventDefault();
     }
 
     /**
@@ -110,75 +91,40 @@ class createQuestion extends Component {
         //         })
         // }
 
-    createFields = () => {
-        return (
-            this.state.fields.map((val, idx) => {
-                if (val[cnst.TYPE] === cnst.SCENARIO || val[cnst.TYPE] === cnst.FRAG) {
-                    return (
-                        <FormGroup key={idx}>
-                            <Label for="criteriaList">{`${val[cnst.TYPE]}`}</Label>
-                            <Input
-                                type="textarea"
-                                id="criteriaList"
-                                onChange={(e) => this.useInput(idx, e) }
-                            />
-                        </FormGroup>
-                    )
-                } else if (val[cnst.TYPE] === cnst.IMAGE) {
-                    return (
-                        <FormGroup key={idx}>
-                            <Label for="exampleCustomFileBrowser">Scenario Image</Label>
-                            <CustomInput type="file"
-                                         id="exampleCustomFileBrowser"
-                                         name="customFile"
-                                         label="Pick an image file"
-                            />
-
-                        </FormGroup>
-                    )
-                }
+    addField = (subtopic) => {
+        this.setState((prevState) => ({
+            subtopics: [...prevState.subtopics, subtopic]
             })
         )
     }
 
-    addField = (label) => {
-        this.setState((prevState) => ({
-            fields: [...prevState.fields, {
-                "type": label,
-                "content": ''
-            }]
-        }))
+    createSubtopics = () => {
+        return (
+            this.state.subtopics.map((val, idx) => {
+                 return (
+                        <Col md={4}>
+                            <FormGroup>
+                                <Label for="sessionSelect">Subtopic</Label>
+                                <Input type="select" name="select" id="sessionSelect">
+                                    <option>1.1.1</option>
+                                    <option>1.1.2</option>
+                                    <option>1.1.3</option>
+                                    <option>1.1.4</option>
+                                    <option>1.1.5</option>
+                                    <option>1.1.6</option>
+                                    <option>1.1.7</option>
+                                </Input>
+                            </FormGroup>
+                        </Col>
+                 )
+            })
+        )
     }
 
     render() {
-        const failed = this.state.onFail;
-
-        //submitEvent() will change onFail if server-side validation failed
-        const validate = () => {
-            if (failed) {
-                return (
-                    <div>
-                        <Alert color="danger">
-                            Something went wrong, try again. {this.state.errToShow}
-                        </Alert>
-                    </div>
-                )
-            }
-        }
-        if (this.state.onSuccess) {
-            return (
-                <div className="create-form-container">
-                    <Alert color="success">
-                        Event created Successfully.
-                    </Alert>
-
-                </div>
-            )
-        }
-
         return (
             <div className="create-form-container">
-                <Form onSubmit={this.submitQuestion}>
+                <Form>
                     <Row form>
                         <Col md={3}>
                             <FormGroup>
@@ -230,22 +176,23 @@ class createQuestion extends Component {
                             </FormGroup>
                         </Col>
                     </Row>
-
+                    <div className="form-group">
+                        <label htmlFor="exampleFormControlTextarea1">Subtopics Metadata</label>
+                        <textarea className="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                    </div>
+                    {this.createSubtopics()}
+                    <Button color="primary" onClick={() => this.addField(cnst.SCENARIO)}>Add Subtopic</Button>
+                    <Button color="danger" onClick={() => this.addField(cnst.SCENARIO)}>Remove Subtopic</Button>
                     <FormGroup>
-                            <Label for="exampleCustomFileBrowser">Scenario Image</Label>
-                            <CustomInput type="file"
-                                         id="exampleCustomFileBrowser"
-                                         name="customFile"
-                                         label="Pick an image file"
-                            />
-                        </FormGroup>
-
-                    {this.createFields()}
+                        <Label for="exampleCustomFileBrowser">Scenario Image</Label>
+                        <CustomInput type="file"
+                                     id="exampleCustomFileBrowser"
+                                     name="customFile"
+                                     label="Pick an image file"
+                        />
+                    </FormGroup>
                 </Form>
-                <Button color="primary" onClick={() => this.addField(cnst.SCENARIO)}>Add Scenario</Button>
-                <Button color="warning" onClick={() => this.addField(cnst.IMAGE)}>Add Image</Button>
-                <Button color="info" onClick={() => this.addField(cnst.FRAG)}>Add Fragment</Button>
-                {validate()}
+                <Button color="primary" >Save Question</Button>
             </div>
         );
     }
