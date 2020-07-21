@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import Guide from './Guide';
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 import CreateQuestion from "./CreateQuestion";
-import PracticePage from "./PracticePage";
+import practicePage from "./practicePage";
 import homepage from "./homepage";
 import * as firebase from "firebase";
 
@@ -28,7 +28,7 @@ class App extends Component {
                     <Switch>
                         <Route path="/" exact component={homepage}/>
                         <Route path="/guide" exact component={Guide}/>
-                        <Route path="/practice" exact component={PracticePage}/>
+                        <Route path="/practice" exact component={practicePage}/>
                         <Route path="/create" exact component={CreateQuestion}/>
                     </Switch>
                 </div>
