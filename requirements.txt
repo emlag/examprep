@@ -25,7 +25,6 @@ google-api-python-client==1.9.3
 google-auth==1.18.0
 google-auth-httplib2==0.0.3
 google-auth-oauthlib==0.4.1
-googleapis-common-protos==1.51.0
 gunicorn==20.0.4
 httplib2==0.18.0
 idna==2.10
@@ -61,8 +60,6 @@ Pygments==2.6.1
 pylint==2.4.4
 pyOpenSSL==19.1.0
 pyparsing==3.0.0a1
-PyPDF2==1.26.0
-PyPDF4==1.27.0
 PySocks==1.7.1
 python-dateutil==2.8.1
 python-dotenv==0.13.0
