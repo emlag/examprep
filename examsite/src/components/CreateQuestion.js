@@ -4,6 +4,7 @@ import {getCookie} from "./Utils";
 import * as cnst from "./Const"
 import * as firebase from "firebase";
 import {Question} from './Question';
+import SubtopicDropdown from './SubtopicDropdown.js';
 
 /**
  * Uses a form to post information about a new event bring created.
@@ -12,22 +13,15 @@ class CreateQuestion extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            onSuccess: false,
-            successPIN: '',
-            onFail: false,
-            errToShow: '',
-            name: '',
-            date: '',
-            time: '',
-            teams: '',
-            judges: '',
-            criteria: '',
-            subtopics:[],
+            subtopics: {},
+            subtopicCount: 0,
             paperType: 1,
             year: 2020,
             session: 'May',
-            topic: 1,
-            subtopicQuestionPair: {},
+            level: 'HL',
+            topic: '1',
+            questionNum: 0,
+            subtopicMetadata: '',
             questionImages: [],
             answerImages: []
         }
@@ -41,15 +35,15 @@ class CreateQuestion extends Component {
     clearInputFields = (e) => {
         e.preventDefault();
         this.setState({
-            name: '',
-            date: '',
-            time: '',
-            teams: '',
+            subtopics: {},
+            subtopicCount: 0,
             paperType: 1,
             year: 2020,
             session: 'May',
-            topic: 1,
-            subtopicQuestionPair: {},
+            level: 'HL',
+            topic: '1',
+            questionNum: 0,
+            subtopicMetadata: '',
             questionImages: [],
             answerImages: []
         })
@@ -63,34 +57,58 @@ class CreateQuestion extends Component {
         console.log(this.state.subtopics);
     }
 
+    increaseSubtopicCount = () => {
+        this.setState((prevState) => ({
+            subtopicCount: prevState.subtopicCount + 1,
+            subtopics: {...this.state.subtopics, [this.state.subtopicCount]: cnst.TOPIC_1_SUB[0]} //TODO: TEMP VARIABLE
+        }))
+
+    }
+
+    decreaseSubtopicCount = () => {
+        console.log(this.state.subtopicCount - 1);
+        const copySubtopics = {...this.state.subtopics}
+        delete copySubtopics[this.state.subtopicCount - 1]
+        this.setState((prevState) => ({
+            subtopicCount: prevState.subtopicCount - 1,
+            subtopics: copySubtopics
+        }))
+    }
+
+    switchSelectedSubtopic = (id, newSubtopic) => {
+        // console.log("create prevSelected: " + prevSelected);
+        // if(!this.state.subtopics.includes(prevSelected))
+        // {
+        //     this.setState({
+        //         subtopics: [...this.state.subtopics, newSubtopic]
+        //     })
+        // }
+        console.log("switch newSubtopic: " + newSubtopic);
+        this.setState({
+            subtopics: {
+                ...this.state.subtopics,
+                [id]: newSubtopic
+            }
+         })    
+    }
+
     createSubtopics = () => {
+        console.log(this.state.subtopics);
+        var display = [];
+        var options = cnst.TOPIC_1_SUB;
+
+        //https://flaviocopes.com/react-how-to-loop/
+        for(var i = 0; i < this.state.subtopicCount; i++) {
+            display.push(<SubtopicDropdown id={i} optionItems={options} switchSelectedSubtopic={this.switchSelectedSubtopic}/>)
+        }
         return (
-            this.state.subtopics.map((val, idx) => {
-                 return (
-                        <Col md={4}>
-                            <FormGroup>
-                                <Label for="subtopicSelect">Subtopic</Label>
-                                <Input type="select" name="select" id="subtopicSelect" value={this.state.subtopics}
-                                // onChange={(event)=> {
-                                //     this.setState((prevState) => ({
-                                //         subtopics: [...prevState.subtopics, subtopic]
-                                //         })
-                                //     )
-                                // }}
-                                >
-                                    <option>1.1.1</option>
-                                    <option>1.1.2</option>
-                                    <option>1.1.3</option>
-                                    <option>1.1.4</option>
-                                    <option>1.1.5</option>
-                                    <option>1.1.6</option>
-                                    <option>1.1.7</option>
-                                </Input>
-                            </FormGroup>
-                        </Col>
-                 )
-            })
-        )
+            <div>
+                {display.map(item => {
+                    return <div>{item}</div>
+                })}
+            </div>
+            
+        );
     }
 
     uploadData = () => {
@@ -100,20 +118,31 @@ class CreateQuestion extends Component {
         console.log("year: " + this.state.year);
         console.log("session: " + this.state.session);
         console.log("topic: " + this.state.topic);
+
         //https://stackoverflow.com/a/46748716
-        
-        const newQuestionRef = db.collection("questions").doc();
-        const key = newQuestionRef.id;
+        const newQuestionRef = db.collection(cnst.DATABASE_BRANCH).doc();
+        const id = newQuestionRef.id;
         // const myelement = <Question id={key} paperType={this.state.paperType}
         // year={this.state.year} session={this.state.session} topic={this.state.topic} />;
+        
+        //parse the actual subtopics from the this.state.subtopics dictionary
+        const subtopicsProcessed = [];
+        for(var key in this.state.subtopics) {
+            if(!subtopicsProcessed.includes(this.state.subtopics[key])) {
+                subtopicsProcessed.push(this.state.subtopics[key]);
+            }
+        }
 
         const myelement = new Question({
-            id:key, 
+            id:id, 
             paperType:this.state.paperType,
             year:this.state.year, 
             session:this.state.session, 
+            level: this.state.level,
+            questionNum:this.state.questionNum,
             topic:this.state.topic,
-            subtopicQuestionPair: {},
+            subtopics: subtopicsProcessed,
+            subtopicMetadata: this.state.subtopicMetadata,
             questionImageUrls: [],
             answerImageUrls: []
         })
@@ -126,7 +155,7 @@ class CreateQuestion extends Component {
         //     topic: this.state.topic
         // });
         newQuestionRef.set(myelement.getData());
-        return key;
+        return id;
     }
 
     uploadImages = (key) => {
@@ -150,7 +179,7 @@ class CreateQuestion extends Component {
                     console.log("got download URL");
                     firebase
                     .firestore()
-                    .collection(`questions`).doc(key)
+                    .collection(cnst.DATABASE_BRANCH).doc(key)
                     .update({
                         //https://firebase.google.com/docs/firestore/manage-data/add-data#update_elements_in_an_array
                         questionImageUrls: firebase.firestore.FieldValue.arrayUnion(url)
@@ -173,7 +202,7 @@ class CreateQuestion extends Component {
                     console.log("got download URL");
                     firebase
                     .firestore()
-                    .collection(`questions`).doc(key)
+                    .collection(cnst.DATABASE_BRANCH).doc(key)
                     .update(
                     {
                         //https://firebase.google.com/docs/firestore/manage-data/add-data#update_elements_in_an_array
@@ -205,10 +234,13 @@ class CreateQuestion extends Component {
                             <FormGroup>
                                 <Label for="paperTypeSelect">Paper Type</Label>
                                 <Input type="select" name="select" id="paperTypeSelect" 
-                                onChange={(event)=> {
-                                    this.state.paperType = event.target.value;
-                                }}>
-                                    <option value="1" >Paper 1</option>
+                                    onChange={(event)=> {
+                                        this.setState({
+                                            paperType: event.target.value
+                                        })
+                                    }}
+                                >
+                                    <option value="1">Paper 1</option>
                                     <option value="2">Paper 2</option>
                                     <option value="3">Paper 3</option>
                                 </Input>
@@ -249,30 +281,61 @@ class CreateQuestion extends Component {
                         </Col>
                         <Col md={3}>
                             <FormGroup>
+                                <Label for="levelSelect">Level</Label>
+                                <Input type="select" name="select" id="levelSelect" onChange={(event)=> {
+                                    this.setState({
+                                        level: event.target.value
+                                      })
+                                }}>
+                                    <option>HL</option>
+                                    <option>SL</option>
+                                </Input>
+                            </FormGroup>
+                        </Col>
+                        <Col md={3}>
+                            <FormGroup>
                                 <Label for="topicSelect">Topic</Label>
                                 <Input type="select" name="select" id="topicSelect" onChange={(event)=> {
                                     this.setState({
                                         topic: event.target.value
                                       })
                                 }}>
-                                    <option>1: System Fundamentals</option>
-                                    <option>2: Computer Organization</option>
-                                    <option>3: Networks</option>
-                                    <option>4: Computational Thinking</option>
-                                    <option>5: Abstract Data Structures</option>
-                                    <option>6: Resource Management</option>
-                                    <option>7: Control</option>
+                                    <option value="1">1: System Fundamentals</option>
+                                    <option value="2">2: Computer Organization</option>
+                                    <option value="3">3: Networks</option>
+                                    <option value="4">4: Computational Thinking</option>
+                                    <option value="5">5: Abstract Data Structures</option>
+                                    <option value="6">6: Resource Management</option>
+                                    <option value="7">7: Control</option>
+                                    <option value="D">D: Object-Oriented Programming</option>
                                 </Input>
+                            </FormGroup>
+                        </Col>
+                        <Col md={3}>
+                            <FormGroup>
+                                <Label htmlFor="questionNum">Question Number</Label>
+                                <Input type="number" className="form-control" id="questionNumber"
+                                onBlur={(event)=> {
+                                    this.setState({
+                                        questionNum: event.target.value
+                                    })
+                                }}/>
                             </FormGroup>
                         </Col>
                     </Row>
                     <div className="form-group">
-                        <label htmlFor="exampleFormControlTextarea1">Subtopics Metadata</label>
-                        <textarea className="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                        <label htmlFor="subtopicMetadata">Subtopics Metadata</label>
+                        <textarea className="form-control" id="subtopicMetadata" rows="3"
+                        onBlur={(event)=> {
+                            this.setState({
+                                subtopicMetadata: event.target.value
+                              })
+                        }}>
+                        </textarea>
                     </div>
                     {this.createSubtopics()}
-                    <Button color="primary" onClick={() => this.addField(cnst.SCENARIO)}>Add Subtopic</Button>
-                    <Button color="danger" onClick={() => this.addField(cnst.SCENARIO)}>Remove Subtopic</Button>
+                    <Button color="primary" onClick={() => this.increaseSubtopicCount()}>Add Subtopic</Button>
+                    <Button color="danger" onClick={() => this.decreaseSubtopicCount()}>Remove Subtopic</Button>
                     <FormGroup>
                         <Label for="exampleCustomFileBrowser">Question Image</Label>
                         <CustomInput type="file"
@@ -283,7 +346,7 @@ class CreateQuestion extends Component {
                                      onChange={
                                         (event)=> {
                                             this.setState({
-                                                questionImages: [...this.state.questionImages, ...event.target.files]
+                                                questionImages: [...event.target.files]
                                             })
                                         }
                                      }
@@ -293,17 +356,16 @@ class CreateQuestion extends Component {
                         <Label for="exampleCustomFileBrowser">Answer Image</Label>
                         <CustomInput type="file"
                                     multiple
-                                     id="exampleCustomFileBrowser"
-                                     name="customFile"
-                                     label="Pick image files for the answers"
-                                     onChange={
+                                    id="exampleCustomFileBrowser"
+                                    name="customFile"
+                                    label="Pick image files for the answers"
+                                    onChange={
                                         (event)=> {
                                             this.setState({
-                                                answerImages: [...this.state.answerImages, ...event.target.files]
+                                                answerImages: [...event.target.files]
                                             })
                                         }
-                                     }
-                        />
+                                     }/>
                     </FormGroup>
                     <Button color="primary" type="submit">Save Question</Button>
                 </Form>

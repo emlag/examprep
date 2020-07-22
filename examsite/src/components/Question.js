@@ -9,8 +9,11 @@ export class Question extends React.Component {
             paperType: this.props.paperType,
             year: this.props.year,
             session: this.props.session,
+            level: this.props.level,
+            questionNum: this.props.questionNum,
             topic: this.props.topic,
-            subtopicQuestionPair: this.props.subtopicQuestionPair,
+            subtopics: this.props.subtopics,
+            subtopicMetadata: this.props.subtopicMetadata,
             questionImageUrls: this.props.questionImageUrls,
             answerImageUrls: this.props.answerImageUrls
         };  
