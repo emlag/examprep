@@ -3,6 +3,7 @@ import {CustomInput, Form, FormGroup, FormText, Label, Input, Button, Alert, Col
 import {getCookie} from "./Utils";
 import * as cnst from "./Const"
 import * as firebase from "firebase";
+import {Question} from './question';
 
 /**
  * Uses a form to post information about a new event bring created.
@@ -53,62 +54,13 @@ class CreateQuestion extends Component {
             answerImages: []
         })
     }
-
-    /**
-     * Posts information to the server about the event being created.
-     *
-     * @param e the component whose state this method will change
-     * @public
-     */
-        // submitEvent = (e) => {
-        //     e.preventDefault();
-        //     console.log("submit clicked");
-        //     console.log(this.state.teams.split('\n'));
-        //
-        //     const token = getCookie('csrftoken');
-        //
-        //     //send call to API
-        //     fetch('/create', {
-        //         method: 'POST',
-        //         headers: {
-        //             'X-CSRFToken': token
-        //         },
-        //         body: JSON.stringify({
-        //             event_name: this.state.name,
-        //             date_time: this.state.date + " " + this.state.time,
-        //             teams: this.state.teams,
-        //             judges: this.state.judges,
-        //             criteria: this.state.criteria
-        //         })
-        //     }).then(response => {
-        //         if (!response.ok) {
-        //             return response.json().then(errorText => {
-        //                 throw new Error(errorText["error"])
-        //             });
-        //         }
-        //         return response.json()
-        //     })
-        //         .then(result => { //if things went well
-        //             const pin = result["pin"];
-        //             this.setState({
-        //                 onSuccess: true,
-        //                 successPIN: pin
-        //             })
-        //         })
-        //         .catch(err => { //otherwise show error alert
-        //             console.log(err);
-        //             this.setState({
-        //                 onFail: true,
-        //                 errToShow: err.message
-        //             })
-        //         })
-        // }
-
+    
     addField = (subtopic) => {
         this.setState((prevState) => ({
             subtopics: [...prevState.subtopics, subtopic]
             })
         )
+        console.log(this.state.subtopics);
     }
 
     createSubtopics = () => {
@@ -117,8 +69,15 @@ class CreateQuestion extends Component {
                  return (
                         <Col md={4}>
                             <FormGroup>
-                                <Label for="sessionSelect">Subtopic</Label>
-                                <Input type="select" name="select" id="sessionSelect" value={this.state.session}>
+                                <Label for="subtopicSelect">Subtopic</Label>
+                                <Input type="select" name="select" id="subtopicSelect" value={this.state.subtopics}
+                                // onChange={(event)=> {
+                                //     this.setState((prevState) => ({
+                                //         subtopics: [...prevState.subtopics, subtopic]
+                                //         })
+                                //     )
+                                // }}
+                                >
                                     <option>1.1.1</option>
                                     <option>1.1.2</option>
                                     <option>1.1.3</option>
@@ -145,12 +104,28 @@ class CreateQuestion extends Component {
         
         const newQuestionRef = db.collection("questions").doc();
         const key = newQuestionRef.id;
-        newQuestionRef.set({
-            paperType: this.state.paperType,
-            year: this.state.year,
-            session: this.state.session,
-            topic: this.state.topic
-        });
+        // const myelement = <Question id={key} paperType={this.state.paperType}
+        // year={this.state.year} session={this.state.session} topic={this.state.topic} />;
+
+        const myelement = new Question({
+            id:key, 
+            paperType:this.state.paperType,
+            year:this.state.year, 
+            session:this.state.session, 
+            topic:this.state.topic,
+            subtopicQuestionPair: {},
+            questionImageUrls: [],
+            answerImageUrls: []
+        })
+
+        console.log("getData: " + myelement.getData());
+        // newQuestionRef.set({
+        //     paperType: this.state.paperType,
+        //     year: this.state.year,
+        //     session: this.state.session,
+        //     topic: this.state.topic
+        // });
+        newQuestionRef.set(myelement.getData());
         return key;
     }
 
@@ -170,16 +145,16 @@ class CreateQuestion extends Component {
                 console.log(error);
             },
             () => {
-                //https://stackoverflow.com/a/43396448
-                var imgUrl = "questionImgUrl" + index;
+                
                 storage.ref(imageRefName).getDownloadURL().then(url => {
                     console.log("got download URL");
                     firebase
                     .firestore()
                     .collection(`questions`).doc(key)
                     .update({
-                        [imgUrl]: url
-                    })
+                        //https://firebase.google.com/docs/firestore/manage-data/add-data#update_elements_in_an_array
+                        questionImageUrls: firebase.firestore.FieldValue.arrayUnion(url)
+                    });
                 })
             });
         })
@@ -194,16 +169,17 @@ class CreateQuestion extends Component {
                 console.log(error);
             },
             () => {
-                //https://stackoverflow.com/a/43396448
-                var imgUrl = "answerImgUrl" + index;
                 storage.ref(imageRefName).getDownloadURL().then(url => {
                     console.log("got download URL");
                     firebase
                     .firestore()
                     .collection(`questions`).doc(key)
-                    .update({
-                        [imgUrl]: url
-                    })
+                    .update(
+                    {
+                        //https://firebase.google.com/docs/firestore/manage-data/add-data#update_elements_in_an_array
+                        answerImageUrls: firebase.firestore.FieldValue.arrayUnion(url)
+                    });
+                    
                 })
             });
         })
