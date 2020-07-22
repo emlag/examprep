@@ -10,7 +10,7 @@ import Collapse from '@material-ui/core/Collapse';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import {red, grey} from '@material-ui/core/colors';
+import {red, grey, green} from '@material-ui/core/colors';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
 import SaveAltIcon from '@material-ui/icons/SaveAlt'
@@ -36,8 +36,11 @@ const useStyles = makeStyles((theme) => ({
     expandOpen: {
         transform: 'rotate(180deg)',
     },
-    avatar: {
+    avatarQ: {
         backgroundColor: red[500],
+    },
+    avatarA: {
+        backgroundColor: "green",
     },
 }));
 
@@ -52,68 +55,78 @@ export default function RecipeReviewCard() {
     };
 
     return (
-            <Card className={classes.root}>
-                <CardHeader
-                    avatar={
-                        <Avatar aria-label="recipe" className={classes.avatar}>
-                            Q
-                        </Avatar>
-                    }
-                    action={
-                        <IconButton aria-label="settings">
-                            <MoreVertIcon/>
-                        </IconButton>
-                    }
-                    title="Topic 1: Systems Fundamentals"
-                    subheader="Paper 1, May 2019"
-                />
-                <CardMedia
-                    className={classes.media}
-                    image="https://firebasestorage.googleapis.com/v0/b/examprep-a775e.appspot.com/o/questions%2F1595272536324?alt=media&token=bd336cc5-e299-4a91-b525-be1aa004d92a"
-                    title="Question 1a"
-                />
+        <Card className={classes.root}>
+            <CardHeader
+                avatar={
+                    <Avatar aria-label="recipe" className={classes.avatarQ}>
+                        Q
+                    </Avatar>
+                }
+                action={
+                    <IconButton aria-label="settings">
+                        <MoreVertIcon/>
+                    </IconButton>
+                }
+                title="Topic 1: Systems Fundamentals"
+                subheader="Paper 1, May 2019"
+            />
+            <CardMedia
+                className={classes.media}
+                image="https://firebasestorage.googleapis.com/v0/b/examprep-a775e.appspot.com/o/questions%2F1595272536324?alt=media&token=bd336cc5-e299-4a91-b525-be1aa004d92a"
+                title="Question 1a"
+            />
+            <CardContent>
+                <Typography variant="body2" color="textSecondary" component="p">
+                    1a: 1.1.1
+                </Typography>
+                <Typography variant="body2" color="textSecondary" component="p">
+                    1b: 1.1.4
+                </Typography>
+                <Typography variant="body2" color="textSecondary" component="p">
+                    1c: 1.1.5, 1.1.7
+                </Typography>
+                <Typography variant="body2" color="textSecondary" component="p">
+                    1d: 1.2.1
+                </Typography>
+            </CardContent>
+            <CardActions disableSpacing>
+                <IconButton aria-label="add to favorites">
+                    <SaveAltIcon/>
+                </IconButton>
+                <IconButton
+                    className={clsx(classes.expand, {
+                        [classes.expandOpen]: expanded,
+                    })}
+                    onClick={handleExpandClick}
+                    aria-expanded={expanded}
+                    aria-label="show more"
+                >
+                    <ExpandMoreIcon/>
+                </IconButton>
+            </CardActions>
+            <Collapse in={expanded} timeout="auto" unmountOnExit>
                 <CardContent>
-                    <Typography variant="body2" color="textSecondary" component="p">
-                        1a: 1.1.1
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary" component="p">
-                        1b: 1.1.4
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary" component="p">
-                        1c: 1.1.5, 1.1.7
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary" component="p">
-                        1d: 1.2.1
-                    </Typography>
+                    <CardHeader
+                        avatar={
+                            <Avatar aria-label="recipe" className={classes.avatarA}>
+                                A
+                            </Avatar>
+                        }
+                        action={
+                            <IconButton aria-label="settings">
+                                <MoreVertIcon/>
+                            </IconButton>
+                        }
+                        title="Topic 1: Systems Fundamentals"
+                        subheader="Paper 1, May 2019"
+                    />
+                    <CardMedia
+                        className={classes.media}
+                        image="https://firebasestorage.googleapis.com/v0/b/examprep-a775e.appspot.com/o/answers%2F1595272536327?alt=media&token=8a8b88b2-410a-4880-91dc-f8295cdf7c52"
+                        title="Question 1a"
+                    />
                 </CardContent>
-                <CardActions disableSpacing>
-                    <IconButton aria-label="add to favorites">
-                        <SaveAltIcon/>
-                    </IconButton>
-                    <IconButton
-                        className={clsx(classes.expand, {
-                            [classes.expandOpen]: expanded,
-                        })}
-                        onClick={handleExpandClick}
-                        aria-expanded={expanded}
-                        aria-label="show more"
-                    >
-                        <ExpandMoreIcon/>
-                    </IconButton>
-                </CardActions>
-                <Collapse in={expanded} timeout="auto" unmountOnExit>
-                    <CardContent>
-                        <Typography paragraph>Answer:</Typography>
-                        <Typography paragraph>
-                            Some answer image here that will display the mark scheme.
-                        </Typography>
-                        <CardMedia
-                            className={classes.media}
-                            image="https://firebasestorage.googleapis.com/v0/b/examprep-a775e.appspot.com/o/answers%2F1595272536327?alt=media&token=8a8b88b2-410a-4880-91dc-f8295cdf7c52"
-                            title="Question 1a"
-                        />
-                    </CardContent>
-                </Collapse>
-            </Card>
+            </Collapse>
+        </Card>
     );
 }
