@@ -3,7 +3,7 @@ import {CustomInput, Form, FormGroup, FormText, Label, Input, Button, Alert, Col
 import {getCookie} from "./Utils";
 import * as cnst from "./Const"
 import * as firebase from "firebase";
-import {Question} from './question';
+import {Question} from './Question';
 
 /**
  * Uses a form to post information about a new event bring created.
