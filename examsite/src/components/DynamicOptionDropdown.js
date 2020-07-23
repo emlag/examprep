@@ -8,13 +8,16 @@ function DynamicOptionDropdown(props) {
     const itemToChange = props.itemToChange;
     const id = props.id;
     var label;
-    if(itemToChange === cnst.TOPIC)
+    if(itemToChange === cnst.TOPIC_KEY)
     {
         label = "Topic";
+        var itemValues = optionItems.map(item => item.split(":")[0])
+        console.log("itemValues: " + itemValues);
     }
-    else if(itemToChange === cnst.SUBTOPIC)
+    else if(itemToChange === cnst.SUBTOPIC_KEY)
     {
         label = "Subtopic";
+        var itemValues = optionItems;
     }
     // //https://stackoverflow.com/questions/53165945/what-is-usestate-in-react
     // const [prevSelected, setPrevSelected] = useState(optionItems[0]);
@@ -30,14 +33,15 @@ function DynamicOptionDropdown(props) {
                     onChange={ (event) => 
                         {
                             console.log("event target value: " + event.target.value);
-                            props.switchSelected(id, event.target.value, {itemToChange});
+                            props.switchSelected(id, event.target.value, itemToChange);
                             // props.switchSelectedSubtopic(prevSelected, event.target.value)
                             // setPrevSelected(event.target.value);
                         }
                     }
                     >
-                        {optionItems.map(item => {
-                        return <option value={item}>{item}</option>;
+                        {
+                            optionItems.map((item, index) => {
+                        return <option value={itemValues[index]}>{item}</option>;
                         })}
                         {/* <option>1.1.1</option>
                         <option>1.1.2</option>
