@@ -54,7 +54,6 @@ export default function practicePage() {
     //creating variables for the states
     const {topicOne, topicTwo, topicThree, topicFour, topicFive, topicSix, topicSeven} = state;
 
-
     return (
         <div>
             <Container>
