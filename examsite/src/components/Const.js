@@ -55,3 +55,11 @@ export const TOPIC_D_SUB = ["D.1.1", "D.1.2", "D.1.3", "D.1.4", "D.1.5",
                             "D.4.1", "D.4.2", "D.4.3", "D.4.4", "D.4.5", 
                             "D.4.6", "D.4.7", "D.4.8", "D.4.9", "D.4.10",
                             "D.4.11", "D.4.12", "D.4.13", "D.4.14", "D.4.15"]
+export const TOPIC_SUBTOPIC_DICT = {"1": TOPIC_1_SUB,
+                                    "2": TOPIC_2_SUB,
+                                    "3": TOPIC_3_SUB,
+                                    "4": TOPIC_4_SUB,
+                                    "5": TOPIC_5_SUB,
+                                    "6": TOPIC_6_SUB,
+                                    "7": TOPIC_7_SUB,
+                                    "D": TOPIC_D_SUB,}
