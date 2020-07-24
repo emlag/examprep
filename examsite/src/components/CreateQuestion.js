@@ -4,7 +4,7 @@ import {getCookie} from "./Utils";
 import * as cnst from "./Const"
 import * as firebase from "firebase";
 import {Question} from './Question';
-import SubtopicDropdown from './SubtopicDropdown.js';
+import DynamicOptionDropdown from './DynamicOptionDropdown.js';
 
 /**
  * Uses a form to post information about a new event bring created.
@@ -13,13 +13,14 @@ class CreateQuestion extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            subtopics: {},
-            subtopicCount: 0,
             paperType: 1,
             year: 2020,
             session: 'May',
             level: 'HL',
-            topic: '1',
+            topics: {},
+            topicCount: 1,
+            subtopics: {},
+            subtopicCount: 0,
             questionNum: 0,
             subtopicMetadata: '',
             questionImages: [],
@@ -35,47 +36,61 @@ class CreateQuestion extends Component {
     clearInputFields = (e) => {
         e.preventDefault();
         this.setState({
-            subtopics: {},
-            subtopicCount: 0,
             paperType: 1,
             year: 2020,
             session: 'May',
             level: 'HL',
-            topic: '1',
+            topics: {"0": "1"},
+            topicCount: 1,
+            subtopics: {},
+            subtopicCount: 0,
             questionNum: 0,
             subtopicMetadata: '',
             questionImages: [],
             answerImages: []
         })
     }
-    
-    addField = (subtopic) => {
-        this.setState((prevState) => ({
-            subtopics: [...prevState.subtopics, subtopic]
-            })
-        )
-        console.log(this.state.subtopics);
+  
+    increaseCount = (itemToChange) => {
+        if(itemToChange === cnst.SUBTOPIC_KEY) {
+            this.setState((prevState) => ({
+                subtopicCount: prevState.subtopicCount + 1,
+                // subtopics: {...this.state.subtopics, 
+                //     [this.state.subtopicCount]: ""} //TODO: TEMP VARIABLE
+            }))
+        }
+        else if(itemToChange === cnst.TOPIC_KEY) {
+            this.setState((prevState) => ({
+                topicCount: prevState.topicCount + 1,
+                // topics: {...this.state.topics, 
+                //     [this.state.topicCount]: ""} //TODO: TEMP VARIABLE
+            }))
+        }
+        
+
     }
 
-    increaseSubtopicCount = () => {
-        this.setState((prevState) => ({
-            subtopicCount: prevState.subtopicCount + 1,
-            subtopics: {...this.state.subtopics, [this.state.subtopicCount]: cnst.TOPIC_1_SUB[0]} //TODO: TEMP VARIABLE
-        }))
-
+    decreaseCount = (itemToChange) => {
+        if(itemToChange === cnst.SUBTOPIC_KEY) {
+            const copySubtopics = {...this.state.subtopics}
+            delete copySubtopics[this.state.subtopicCount - 1]
+            this.setState((prevState) => ({
+                subtopicCount: prevState.subtopicCount - 1,
+                subtopics: copySubtopics
+            }))
+        }
+        else if(itemToChange === cnst.TOPIC_KEY) {
+            const copyTopics = {...this.state.topics}
+            delete copyTopics[this.state.topicCount - 1]
+            this.setState((prevState) => ({
+                topicCount: prevState.topicCount - 1,
+                topics: copyTopics
+            }))
+        }
+        
     }
 
-    decreaseSubtopicCount = () => {
-        console.log(this.state.subtopicCount - 1);
-        const copySubtopics = {...this.state.subtopics}
-        delete copySubtopics[this.state.subtopicCount - 1]
-        this.setState((prevState) => ({
-            subtopicCount: prevState.subtopicCount - 1,
-            subtopics: copySubtopics
-        }))
-    }
-
-    switchSelectedSubtopic = (id, newSubtopic) => {
+    switchSelected = (id, newItem, itemToChange) => {
         // console.log("create prevSelected: " + prevSelected);
         // if(!this.state.subtopics.includes(prevSelected))
         // {
@@ -83,23 +98,35 @@ class CreateQuestion extends Component {
         //         subtopics: [...this.state.subtopics, newSubtopic]
         //     })
         // }
-        console.log("switch newSubtopic: " + newSubtopic);
-        this.setState({
-            subtopics: {
-                ...this.state.subtopics,
-                [id]: newSubtopic
-            }
-         })    
+        if(itemToChange === cnst.SUBTOPIC_KEY) {
+            this.setState({
+                subtopics: {
+                    ...this.state.subtopics,
+                    [id]: newItem
+                }
+             })  
+        }
+        if(itemToChange === cnst.TOPIC_KEY) {
+            this.setState({
+                topics: {
+                    ...this.state.topics,
+                    [id]: newItem
+                }
+             })  
+        }
     }
 
-    createSubtopics = () => {
-        console.log(this.state.subtopics);
+    createTopics = () => {
         var display = [];
-        var options = cnst.TOPIC_1_SUB;
+        var options = [];
+        for(var topic in cnst.TOPICS)
+        {
+            options.push(cnst.TOPICS[topic]);
+        }
 
         //https://flaviocopes.com/react-how-to-loop/
-        for(var i = 0; i < this.state.subtopicCount; i++) {
-            display.push(<SubtopicDropdown id={i} optionItems={options} switchSelectedSubtopic={this.switchSelectedSubtopic}/>)
+        for(var i = 0; i < this.state.topicCount; i++) {
+            display.push(<DynamicOptionDropdown id={i} itemToChange={cnst.TOPIC_KEY} optionItems={options} switchSelected={this.switchSelected}/>)
         }
         return (
             <div>
@@ -107,17 +134,31 @@ class CreateQuestion extends Component {
                     return <div>{item}</div>
                 })}
             </div>
-            
+        );
+    }
+
+    createSubtopics = () => {
+        var display = [];
+        var options = [];
+        for(var topic in this.state.topics) {
+            options = options.concat(cnst.TOPIC_SUBTOPIC_DICT[this.state.topics[topic]]);
+        }
+
+        //https://flaviocopes.com/react-how-to-loop/
+        for(var i = 0; i < this.state.subtopicCount; i++) {
+            display.push(<DynamicOptionDropdown id={i} itemToChange={cnst.SUBTOPIC_KEY} optionItems={options} switchSelected={this.switchSelected}/>)
+        }
+        return (
+            <div>
+                {display.map(item => {
+                    return <div>{item}</div>
+                })}
+            </div>
         );
     }
 
     uploadData = () => {
         const db = firebase.firestore();
-        console.log("uploadData()");
-        console.log("paperType: " + this.state.paperType);
-        console.log("year: " + this.state.year);
-        console.log("session: " + this.state.session);
-        console.log("topic: " + this.state.topic);
 
         //https://stackoverflow.com/a/46748716
         const newQuestionRef = db.collection(cnst.DATABASE_BRANCH).doc();
@@ -133,6 +174,13 @@ class CreateQuestion extends Component {
             }
         }
 
+        const topicsProcessed = [];
+        for(var key in this.state.topics) {
+            if(!topicsProcessed.includes(this.state.topics[key])) {
+                topicsProcessed.push(this.state.topics[key]);
+            }
+        }
+
         const myelement = new Question({
             id:id, 
             paperType:this.state.paperType,
@@ -140,14 +188,13 @@ class CreateQuestion extends Component {
             session:this.state.session, 
             level: this.state.level,
             questionNum:this.state.questionNum,
-            topic:this.state.topic,
+            topics: topicsProcessed,
             subtopics: subtopicsProcessed,
             subtopicMetadata: this.state.subtopicMetadata,
             questionImageUrls: [],
             answerImageUrls: []
         })
 
-        console.log("getData: " + myelement.getData());
         // newQuestionRef.set({
         //     paperType: this.state.paperType,
         //     year: this.state.year,
@@ -199,7 +246,7 @@ class CreateQuestion extends Component {
             },
             () => {
                 storage.ref(imageRefName).getDownloadURL().then(url => {
-                    console.log("got download URL");
+                    console.log("got download URL answer");
                     firebase
                     .firestore()
                     .collection(cnst.DATABASE_BRANCH).doc(key)
@@ -218,7 +265,6 @@ class CreateQuestion extends Component {
 
     submitForm = e => {
         e.preventDefault();
-        console.log("button pressed");
 
         const dataKey = this.uploadData();
         this.uploadImages(dataKey);
@@ -294,32 +340,14 @@ class CreateQuestion extends Component {
                         </Col>
                         <Col md={3}>
                             <FormGroup>
-                                <Label for="topicSelect">Topic</Label>
-                                <Input type="select" name="select" id="topicSelect" onChange={(event)=> {
-                                    this.setState({
-                                        topic: event.target.value
-                                      })
-                                }}>
-                                    <option value="1">1: System Fundamentals</option>
-                                    <option value="2">2: Computer Organization</option>
-                                    <option value="3">3: Networks</option>
-                                    <option value="4">4: Computational Thinking</option>
-                                    <option value="5">5: Abstract Data Structures</option>
-                                    <option value="6">6: Resource Management</option>
-                                    <option value="7">7: Control</option>
-                                    <option value="D">D: Object-Oriented Programming</option>
-                                </Input>
-                            </FormGroup>
-                        </Col>
-                        <Col md={3}>
-                            <FormGroup>
                                 <Label htmlFor="questionNum">Question Number</Label>
-                                <Input type="number" className="form-control" id="questionNumber"
+                                <Input type="number" min="1" className="form-control" id="questionNumber"
                                 onBlur={(event)=> {
                                     this.setState({
                                         questionNum: event.target.value
                                     })
-                                }}/>
+                                }}
+                                />
                             </FormGroup>
                         </Col>
                     </Row>
@@ -333,9 +361,18 @@ class CreateQuestion extends Component {
                         }}>
                         </textarea>
                     </div>
+                    <Row>
+                    <Col>
+                    {this.createTopics()}
+                    <Button color="primary" onClick={() => this.increaseCount(cnst.TOPIC_KEY)}>Add Topic</Button>
+                    <Button color="danger" onClick={() => this.decreaseCount(cnst.TOPIC_KEY)}>Remove Topic</Button>
+                    </Col>
+                    <Col>
                     {this.createSubtopics()}
-                    <Button color="primary" onClick={() => this.increaseSubtopicCount()}>Add Subtopic</Button>
-                    <Button color="danger" onClick={() => this.decreaseSubtopicCount()}>Remove Subtopic</Button>
+                    <Button color="primary" onClick={() => this.increaseCount(cnst.SUBTOPIC_KEY)}>Add Subtopic</Button>
+                    <Button color="danger" onClick={() => this.decreaseCount(cnst.SUBTOPIC_KEY)}>Remove Subtopic</Button>
+                    </Col>
+                    </Row>
                     <FormGroup>
                         <Label for="exampleCustomFileBrowser">Question Image</Label>
                         <CustomInput type="file"

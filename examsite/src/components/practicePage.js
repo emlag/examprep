@@ -54,21 +54,6 @@ export default function practicePage() {
     //creating variables for the states
     const {topicOne, topicTwo, topicThree, topicFour, topicFive, topicSix, topicSeven} = state;
 
-
-    //1. pick a checkbox
-    //2. click on a button to query
-    //3. figure out which checkboxes are clicked
-    //4. compound query for any checkboxes that are on
-        //5. is there a way to get a random one or do I have to get all of the data currently in the databse?
-    //5. display the questions in the correct spot
-        //5a. this will be an array so we have to loop through an create a new card image for each question image
-    //6. display the answer int he correct spot.
-        //6a. same sort of looping for the answer images
-    //7. display the metadata
-    //8. display the title and topic info for the picture
-
-
-
     return (
         <div>
             <Container>

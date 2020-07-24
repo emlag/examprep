@@ -11,7 +11,7 @@ export class Question extends React.Component {
             session: this.props.session,
             level: this.props.level,
             questionNum: this.props.questionNum,
-            topic: this.props.topic,
+            topics: this.props.topics,
             subtopics: this.props.subtopics,
             subtopicMetadata: this.props.subtopicMetadata,
             questionImageUrls: this.props.questionImageUrls,
