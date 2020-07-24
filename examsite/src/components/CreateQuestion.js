@@ -60,7 +60,6 @@ class CreateQuestion extends Component {
             }))
         }
         else if(itemToChange === cnst.TOPIC_KEY) {
-            console.log("add new topic");
             this.setState((prevState) => ({
                 topicCount: prevState.topicCount + 1,
                 // topics: {...this.state.topics, 
@@ -73,7 +72,6 @@ class CreateQuestion extends Component {
 
     decreaseCount = (itemToChange) => {
         if(itemToChange === cnst.SUBTOPIC_KEY) {
-            console.log(this.state.subtopicCount - 1);
             const copySubtopics = {...this.state.subtopics}
             delete copySubtopics[this.state.subtopicCount - 1]
             this.setState((prevState) => ({
@@ -267,7 +265,6 @@ class CreateQuestion extends Component {
 
     submitForm = e => {
         e.preventDefault();
-        console.log("button pressed");
 
         const dataKey = this.uploadData();
         this.uploadImages(dataKey);

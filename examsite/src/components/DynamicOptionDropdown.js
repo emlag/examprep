@@ -12,7 +12,6 @@ function DynamicOptionDropdown(props) {
     {
         label = "Topic";
         var itemValues = optionItems.map(item => item.split(":")[0])
-        console.log("itemValues: " + itemValues);
     }
     else if(itemToChange === cnst.SUBTOPIC_KEY)
     {
@@ -32,7 +31,6 @@ function DynamicOptionDropdown(props) {
                     onSelect={ (event) => {console.log("onselect " + event.target.value)}}
                     onChange={ (event) => 
                         {
-                            console.log("event target value: " + event.target.value);
                             props.switchSelected(id, event.target.value, itemToChange);
                             // props.switchSelectedSubtopic(prevSelected, event.target.value)
                             // setPrevSelected(event.target.value);
