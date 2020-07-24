@@ -9,6 +9,9 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import QuestionCard from "./QuestionCard";
 import Container from '@material-ui/core/Container';
+import Button from "@material-ui/core/Button";
+import * as firebase from "firebase";
+import * as cnst from "./Const";
 
 
 //venturing into styled components.
@@ -37,22 +40,45 @@ export default function practicePage() {
 
     //similar to this.state in a class component
     const [state, setState] = useState({
-        topicOne: false,
-        topicTwo: false,
-        topicThree: false,
-        topicFour: false,
-        topicFive: false,
-        topicSix: false,
-        topicSeven: false,
+        allChecked: []
     });
 
     //change the current state for one of the checkboxes
-    const handleChange = (event) => {
-        setState({...state, [event.target.name]: event.target.checked});
+    const handleChange = (event, topicName) => {
+        //setState({...state, [event.target.name]: event.target.checked});
+        setState({
+            allChecked: state.allChecked.includes(topicName) ?
+                state.allChecked.filter(value => value !== topicName) :
+                [...state.allChecked, topicName]
+        });
     };
 
     //creating variables for the states
     const {topicOne, topicTwo, topicThree, topicFour, topicFive, topicSix, topicSeven} = state;
+
+    function getRandomIntInclusive(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+    }
+
+    function onSearch() {
+        const db = firebase.firestore();
+
+        console.log(state.allChecked);
+
+        const newQuestionRef = db.collection(cnst.DATABASE_BRANCH);
+        newQuestionRef.where("topics", "array-contains-any", state.allChecked).get()
+            .then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    // doc.data() is never undefined for query doc snapshots
+                    console.log(doc.id, " => ", doc.data());
+                });
+            })
+            .catch(function (error) {
+                console.log("Error getting documents: ", error);
+            });
+    }
 
     return (
         <div>
@@ -62,43 +88,53 @@ export default function practicePage() {
                     <FormControl component="fieldset" className={classes.formControl}>
                         <FormGroup>
                             <FormControlLabel
-                                control={<Checkbox checked={topicOne} onChange={handleChange} name="topicOne"
+                                control={<Checkbox checked={topicOne} onChange={e => handleChange(e, "1")} name="1"
                                                    color="primary"/>}
                                 label="Topic 1: Systems Fundamentals"
                             />
                             <FormControlLabel
-                                control={<Checkbox checked={topicTwo} onChange={handleChange} name="topicTwo"
+                                control={<Checkbox checked={topicTwo} onChange={e => handleChange(e, "2")} name="2"
                                                    color="primary"/>}
                                 label="Topic 2: Computer Organization"
                             />
                             <FormControlLabel
-                                control={<Checkbox checked={topicThree} onChange={handleChange} name="topicThree"
+                                control={<Checkbox checked={topicThree} onChange={e => handleChange(e, "3")} name="3"
                                                    color="primary"/>}
                                 label="Topic 3: Networks"
                             />
                             <FormControlLabel
-                                control={<Checkbox checked={topicFour} onChange={handleChange} name="topicFour"
+                                control={<Checkbox checked={topicFour} onChange={e => handleChange(e, "4")} name="4"
                                                    color="primary"/>}
                                 label="Topic 4: Computational Thinking"
                             />
                         </FormGroup>
+                        <Button variant="outlined" color="primary" onClick={() => {
+                            onSearch()
+                        }}>
+                            Search
+                        </Button>
                     </FormControl>
                     <FormControl component="fieldset" className={classes.formControl}>
                         <FormGroup>
                             <FormControlLabel
-                                control={<Checkbox checked={topicFive} onChange={handleChange} name="topicFive"
+                                control={<Checkbox checked={topicFive} onChange={e => handleChange(e, "5")} name="5"
                                                    color="primary"/>}
                                 label="Topic 5: Abstract Data Structures"
                             />
                             <FormControlLabel
-                                control={<Checkbox checked={topicSix} onChange={handleChange} name="topicSix"
+                                control={<Checkbox checked={topicSix} onChange={e => handleChange(e, "6")} name="6"
                                                    color="primary"/>}
                                 label="Topic 6: Resource Management"
                             />
                             <FormControlLabel
-                                control={<Checkbox checked={topicSeven} onChange={handleChange} name="topicSeven"
+                                control={<Checkbox checked={topicSeven} onChange={e => handleChange(e, "7")} name="7"
                                                    color="primary"/>}
                                 label="Topic 7: Control"
+                            />
+                            <FormControlLabel
+                                control={<Checkbox checked={topicSeven} onChange={e => handleChange(e, "D")} name="D"
+                                                   color="primary"/>}
+                                label="Option D: OOP"
                             />
                         </FormGroup>
                     </FormControl>
