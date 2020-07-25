@@ -1,9 +1,84 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
+import * as cnst from "./Const";
+import * as firebase from "firebase";
 import { Global } from "./styles";
 import Tree from "./Tree";
 
 class Guide extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      topicQuestions: [], //change to dictionary?
+      data: null
+    };
+
+    this.queryTopic = this.queryTopic.bind(this);
+  }
+
+  queryTopic = e => {
+    const db = firebase.firestore();
+
+    //https://stackoverflow.com/questions/48479717/how-do-i-render-firestore-data-in-react
+    const questionRef = db.collection(cnst.DATABASE_BRANCH);
+
+    const query = questionRef.where("subtopics", "array-contains", e);
+
+    query.get().then(querySnapshot => {
+      querySnapshot
+        .forEach(doc => {
+          {
+            let data = doc.data();
+            if (doc.exists) {
+              let data = doc.data();
+              this.setState({ data: data });
+              this.setState({ topicQuestions: data.id });
+              console.log("Document data:", data.id);
+              console.log("Document data:", data);
+            } else {
+              this.setState({ data: null });
+              console.log("No such document!");
+            }
+          }
+        })
+        .catch(error => {
+          //TODO: doesn't work
+          this.setState({ data: null });
+          console.log("Error getting document:", error);
+        });
+    });
+  };
+
+  componentDidMount() {
+    this.queryTopic("1.1.1");
+  }
+
+  //pass in firestore question ID
+  getQuestionName = e => {
+    const questionRef = db.collection(cnst.DATABASE_BRANCH).doc(e);
+    docRef
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          let data = doc.data();
+          this.setState({ data: data });
+          var session = dict["session"];
+          var level = dict["level"];
+          var paper = dict["paperType"];
+          var year = dict["year"];
+          var name = session + year + level + paper;
+        } else {
+          // doc.data() will be undefined in this case
+          this.setState({ data: null });
+          console.log("No such document!");
+        }
+      })
+      .catch(function(error) {
+        this.setState({ data: null });
+        console.log("Error getting document:", error);
+      });
+  };
+
   render() {
     return (
       <>
@@ -11,10 +86,22 @@ class Guide extends Component {
         <Tree name="main" defaultOpen>
           <Tree name="Topic 1: System Fundamentals">
             <Tree name="1.1 Systems in Organizations">
-              <Tree name="Planning and System Installation" />
-              <Tree name="User Focus" />
-              <Tree name="System Backup" />
-              <Tree name="Software Deployment" />
+              <Tree name="1.1.1 Planning and System Installation">
+                <div
+                  type="tree-div"
+                  style={{
+                    position: "relative",
+                    width: "100%",
+                    height: 200,
+                    padding: 10,
+                    background: "black",
+                    borderRadius: 5
+                  }}
+                ></div>
+              </Tree>
+              <Tree name="1.1.2 User Focus" />
+              <Tree name="1.1.3 System Backup" />
+              <Tree name="1.1.4 Software Deployment" />
             </Tree>
             <Tree name="1.2 System design basics">
               <Tree name="Components of a computer system" />
@@ -84,8 +171,8 @@ programming"
               <Tree name="D.4 Advanced program development (HL)" />
             </Tree>
           </Tree>
-
-          {/* <Tree name="subtree with children">
+          {/* 
+          <Tree name="subtree with children">
             <Tree name="hello" />
             <Tree name="sub-subtree with children">
               <Tree name="child 1" style={{ color: "#37ceff" }} />

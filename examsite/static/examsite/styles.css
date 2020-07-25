@@ -1,54 +1,50 @@
 body {
-    padding: 10px;
+  padding: 10px;
 }
 
 /*very jank way of centering this content*/
 .question-div {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 37%;
-    text-align: center;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 37%;
+  text-align: center;
 }
 
 .nav-link {
-    color: #1a1a1a;
-    font-family: "Hiragino Kaku Gothic Pro";
-    font-weight: bold;
-    letter-spacing: 0.25em;
-    text-align: center;
+  color: #1a1a1a;
+  font-family: "Hiragino Kaku Gothic Pro";
+  font-weight: bold;
+  letter-spacing: 0.25em;
+  text-align: center;
 }
 
 .nav {
-    font-family: "Hiragino Kaku Gothic Pro";
-    font-size: 12px;
-    font-weight: bold;
-    display: flex;
-    justify-content: center;
+  font-family: "Hiragino Kaku Gothic Pro";
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
 }
 
 papers-table {
-    font-family: "Hiragino Kaku Gothic Pro";
+  font-family: "Hiragino Kaku Gothic Pro";
 }
 
 .header {
-    color: #1a1a1a;
-    font-family: "Hiragino Kaku Gothic Pro";
-    font-weight: bold;
-    text-align: center;
+  color: #1a1a1a;
+  font-family: "Hiragino Kaku Gothic Pro";
+  font-weight: bold;
+  text-align: center;
 }
 
 .footer {
-    position: fixed;
-    left: 0;
-    font-family: "Hiragino Kaku Gothic Pro";
-    bottom: 0;
-    width: 100%;
-    background-color: white;
-    color: #1a1a1a;
-    text-align: center;
+  position: fixed;
+  left: 0;
+  font-family: "Hiragino Kaku Gothic Pro";
+  bottom: 0;
+  width: 100%;
+  background-color: white;
+  color: #1a1a1a;
+  text-align: center;
 }
-
-
-
-
