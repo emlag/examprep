@@ -46,13 +46,45 @@ const useStyles = makeStyles((theme) => ({
 
 
 //from https://material-ui.com/components/cards/
-export default function RecipeReviewCard() {
+export default function RecipeReviewCard(props) {
     const classes = useStyles();
     const [expanded, setExpanded] = React.useState(false);
 
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
+
+    function getRandomIntInclusive(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+    }
+
+    function imageDivs() {
+        console.log("objs here: ")
+        console.log(props.objsFromDB)
+
+        const isEmpty = props.objsFromDB === undefined || props.objsFromDB.length == 0 ;
+
+        if ( ! isEmpty ) {
+            let randomImageNum = getRandomIntInclusive(0, props.objsFromDB.length);
+            console.log(props.objsFromDB[randomImageNum])
+
+            const toShow = props.objsFromDB[randomImageNum]
+
+            return (
+                toShow.questionImageUrls.map(url => {
+                    return <CardMedia
+                        className={classes.media}
+                        image={url}
+                        title={toShow.questionNum}
+                    />
+                })
+            );
+        }
+
+
+    }
 
     return (
         <Card className={classes.root}>
@@ -70,11 +102,12 @@ export default function RecipeReviewCard() {
                 title="Topic 1: Systems Fundamentals"
                 subheader="Paper 1, May 2019"
             />
-            <CardMedia
-                className={classes.media}
-                image="https://firebasestorage.googleapis.com/v0/b/examprep-a775e.appspot.com/o/questions%2F1595272536324?alt=media&token=bd336cc5-e299-4a91-b525-be1aa004d92a"
-                title="Question 1a"
-            />
+            {imageDivs()}
+            {/*<CardMedia*/}
+            {/*    className={classes.media}*/}
+            {/*    image="https://firebasestorage.googleapis.com/v0/b/examprep-a775e.appspot.com/o/questions%2F1595272536324?alt=media&token=bd336cc5-e299-4a91-b525-be1aa004d92a"*/}
+            {/*    title="Question 1a"*/}
+            {/*/>*/}
             <CardContent>
                 <Typography variant="body2" color="textSecondary" component="p">
                     1a: 1.1.1

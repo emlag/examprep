@@ -40,8 +40,10 @@ export default function practicePage() {
 
     //similar to this.state in a class component
     const [state, setState] = useState({
-        allChecked: []
+        allChecked: [],
     });
+
+    const [objsFromDB, setObjsFromDB] = useState([])
 
     //change the current state for one of the checkboxes
     const handleChange = (event, topicName) => {
@@ -56,12 +58,6 @@ export default function practicePage() {
     //creating variables for the states
     const {topicOne, topicTwo, topicThree, topicFour, topicFive, topicSix, topicSeven} = state;
 
-    function getRandomIntInclusive(min, max) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
-    }
-
     function onSearch() {
         const db = firebase.firestore();
 
@@ -69,13 +65,19 @@ export default function practicePage() {
 
         const newQuestionRef = db.collection(cnst.DATABASE_BRANCH);
         newQuestionRef.where("topics", "array-contains-any", state.allChecked).get()
-            .then(function (querySnapshot) {
-                querySnapshot.forEach(function (doc) {
+            .then( (querySnapshot) => {
+
+                let fromDB = []
+
+                querySnapshot.forEach( (doc) => {
                     // doc.data() is never undefined for query doc snapshots
-                    console.log(doc.id, " => ", doc.data());
+                    // console.log(doc.id, " => ", doc.data());
+                    fromDB.push(doc.data());
                 });
+
+                setObjsFromDB(fromDB);
             })
-            .catch(function (error) {
+            .catch( (error) => {
                 console.log("Error getting documents: ", error);
             });
     }
@@ -141,7 +143,7 @@ export default function practicePage() {
                 </div>
             </Container>
             <Container>
-                <QuestionCard/>
+                <QuestionCard objsFromDB = {objsFromDB}/>
             </Container>
         </div>
     )
