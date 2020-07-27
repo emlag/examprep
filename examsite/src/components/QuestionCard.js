@@ -19,13 +19,11 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        maxWidth: '80%',
+        // maxWidth: '90%',
         backgroundColor: grey[50],
+        // margin:'auto'
     },
-    media: {
-        height: 0,
-        paddingTop: '56.25%', // 16:9
-    },
+
     expand: {
         transform: 'rotate(0deg)',
         marginLeft: 'auto',
@@ -64,9 +62,9 @@ export default function RecipeReviewCard(props) {
         console.log("objs here: ")
         console.log(props.objsFromDB)
 
-        const isEmpty = props.objsFromDB === undefined || props.objsFromDB.length == 0 ;
+        const isEmpty = props.objsFromDB === undefined || props.objsFromDB.length == 0;
 
-        if ( ! isEmpty ) {
+        if (!isEmpty) {
             let randomImageNum = getRandomIntInclusive(0, props.objsFromDB.length);
             console.log(props.objsFromDB[randomImageNum])
 
@@ -75,7 +73,8 @@ export default function RecipeReviewCard(props) {
             return (
                 toShow.questionImageUrls.map(url => {
                     return <CardMedia
-                        className={classes.media}
+                        component="img"
+                        alt="Question Number"
                         image={url}
                         title={toShow.questionNum}
                     />
