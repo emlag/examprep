@@ -43,11 +43,21 @@ export default function practicePage() {
         allChecked: [],
     });
 
-    const [objFromDB, setObjFromDB] = useState({answerImageUrls:[], questionImageUrls:[], questionNum:""})
+    const [objFromDB, setObjFromDB] = useState({
+        answerImageUrls:[],
+        questionImageUrls:[],
+        questionNum:"",
+        subtopicMetadata: "",
+        topics: "",
+        subtopics: "",
+        paperType: "",
+        level: "",
+        year: "",
+        session: ""
+    })
 
     //change the current state for one of the checkboxes
     const handleChange = (event, topicName) => {
-        //setState({...state, [event.target.name]: event.target.checked});
         setState({
             allChecked: state.allChecked.includes(topicName) ?
                 state.allChecked.filter(value => value !== topicName) :

@@ -53,36 +53,40 @@ export default function RecipeReviewCard(props) {
     };
 
 
-
     function imageDivs() {
-            return (
-                props.dbResult.questionImageUrls.map((url, idx) => {
-                    return <CardMedia
-                        key={idx}
-                        component="img"
-                        alt="Question Number"
-                        image={url}
-                        title={props.dbResult.questionNum}
-                    />
-                })
-            );
+        return (
+            props.dbResult.questionImageUrls.map((url, idx) => {
+                return <CardMedia
+                    key={idx}
+                    component="img"
+                    alt="Question Number"
+                    image={url}
+                    title={props.dbResult.questionNum}
+                />
+            })
+        );
     }
 
     function answerDivs() {
         return (
-                props.dbResult.answerImageUrls.map((url, idx) => {
-                    return <CardMedia
-                        key={idx}
-                        component="img"
-                        alt="Question Number"
-                        image={url}
-                        title={props.dbResult.questionNum}
-                    />
-                })
-            );
+            props.dbResult.answerImageUrls.map((url, idx) => {
+                return <CardMedia
+                    key={idx}
+                    component="img"
+                    alt="Question Number"
+                    image={url}
+                    title={props.dbResult.questionNum}
+                />
+            })
+        );
     }
 
+    const questionTitle = "Topic " + props.dbResult.topics;
+    const paperInfo = "Paper " + props.dbResult.paperType + ", " + props.dbResult.session + " " + props.dbResult.year
+
+
     return (
+
         <Card className={classes.root}>
             <CardHeader
                 avatar={
@@ -95,22 +99,13 @@ export default function RecipeReviewCard(props) {
                         <MoreVertIcon/>
                     </IconButton>
                 }
-                title="Topic 1: Systems Fundamentals"
-                subheader="Paper 1, May 2019"
+                title={questionTitle}
+                subheader={paperInfo}
             />
             {imageDivs()}
             <CardContent>
                 <Typography variant="body2" color="textSecondary" component="p">
-                    1a: 1.1.1
-                </Typography>
-                <Typography variant="body2" color="textSecondary" component="p">
-                    1b: 1.1.4
-                </Typography>
-                <Typography variant="body2" color="textSecondary" component="p">
-                    1c: 1.1.5, 1.1.7
-                </Typography>
-                <Typography variant="body2" color="textSecondary" component="p">
-                    1d: 1.2.1
+                    {props.dbResult.subtopicMetadata}
                 </Typography>
             </CardContent>
             <CardActions disableSpacing>
@@ -141,8 +136,8 @@ export default function RecipeReviewCard(props) {
                                 <MoreVertIcon/>
                             </IconButton>
                         }
-                        title="Topic 1: Systems Fundamentals"
-                        subheader="Paper 1, May 2019"
+                        title={questionTitle}
+                        subheader={paperInfo}
                     />
                     {answerDivs()}
                 </CardContent>
