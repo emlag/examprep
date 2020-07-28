@@ -43,7 +43,7 @@ export default function practicePage() {
         allChecked: [],
     });
 
-    const [objFromDB, setObjFromDB] = useState({questionImageUrls:[], questionNum:""})
+    const [objFromDB, setObjFromDB] = useState({answerImageUrls:[], questionImageUrls:[], questionNum:""})
 
     //change the current state for one of the checkboxes
     const handleChange = (event, topicName) => {
@@ -155,7 +155,7 @@ export default function practicePage() {
                 </div>
             </Container>
             <Container>
-                <QuestionCard questionToShow={objFromDB}/>
+                <QuestionCard dbResult={objFromDB}/>
             </Container>
         </div>
     )

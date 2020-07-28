@@ -55,31 +55,31 @@ export default function RecipeReviewCard(props) {
 
 
     function imageDivs() {
-        // console.log("objs here: ")
-        // console.log(props.objsFromDB)
-
-        // const isEmpty = props.objsFromDB === undefined || props.objsFromDB.length == 0;
-
-        // if (!isEmpty) {
-        //     let randomImageNum = getRandomIntInclusive(0, props.objsFromDB.length);
-        //     console.log(props.objsFromDB[randomImageNum])
-        //
-        //     const toShow = props.objsFromDB[randomImageNum]
-
             return (
-                props.questionToShow.questionImageUrls.map((url, idx) => {
+                props.dbResult.questionImageUrls.map((url, idx) => {
                     return <CardMedia
                         key={idx}
                         component="img"
                         alt="Question Number"
                         image={url}
-                        title={props.questionToShow.questionNum}
+                        title={props.dbResult.questionNum}
                     />
                 })
             );
+    }
 
-
-
+    function answerDivs() {
+        return (
+                props.dbResult.answerImageUrls.map((url, idx) => {
+                    return <CardMedia
+                        key={idx}
+                        component="img"
+                        alt="Question Number"
+                        image={url}
+                        title={props.dbResult.questionNum}
+                    />
+                })
+            );
     }
 
     return (
@@ -99,11 +99,6 @@ export default function RecipeReviewCard(props) {
                 subheader="Paper 1, May 2019"
             />
             {imageDivs()}
-            {/*<CardMedia*/}
-            {/*    className={classes.media}*/}
-            {/*    image="https://firebasestorage.googleapis.com/v0/b/examprep-a775e.appspot.com/o/questions%2F1595272536324?alt=media&token=bd336cc5-e299-4a91-b525-be1aa004d92a"*/}
-            {/*    title="Question 1a"*/}
-            {/*/>*/}
             <CardContent>
                 <Typography variant="body2" color="textSecondary" component="p">
                     1a: 1.1.1
@@ -149,11 +144,7 @@ export default function RecipeReviewCard(props) {
                         title="Topic 1: Systems Fundamentals"
                         subheader="Paper 1, May 2019"
                     />
-                    <CardMedia
-                        className={classes.media}
-                        image="https://firebasestorage.googleapis.com/v0/b/examprep-a775e.appspot.com/o/answers%2F1595272536327?alt=media&token=8a8b88b2-410a-4880-91dc-f8295cdf7c52"
-                        title="Question 1a"
-                    />
+                    {answerDivs()}
                 </CardContent>
             </Collapse>
         </Card>
