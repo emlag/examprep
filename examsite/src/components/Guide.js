@@ -14,44 +14,56 @@ class Guide extends Component {
     };
 
     this.queryTopic = this.queryTopic.bind(this);
+
+    this.queryTopic("1.1.1");
+
+    //can't get queryTopic to run first
+    var questionNames = [];
+    console.log("topic questions 2:", this.state.topicQuestions);
+    for (var question in this.state.topicQuestions) {
+      console.log("got in for loop", question);
+      questionNames = questionNames.concat(this.getQuestionName(question));
+    }
+    console.log("question names:", questionNames);
   }
 
   queryTopic = e => {
+    //rename input
     const db = firebase.firestore();
 
     //https://stackoverflow.com/questions/48479717/how-do-i-render-firestore-data-in-react
     const questionRef = db.collection(cnst.DATABASE_BRANCH);
 
-    const query = questionRef.where("subtopics", "array-contains", e);
+    // const query = questionRef.where("subtopics", "array-contains", e);
+    const query = questionRef.where("paperType", "==", 1);
 
     query.get().then(querySnapshot => {
-      querySnapshot
-        .forEach(doc => {
-          {
+      querySnapshot.forEach(doc => {
+        {
+          let data = doc.data();
+          if (doc.exists) {
             let data = doc.data();
-            if (doc.exists) {
-              let data = doc.data();
-              this.setState({ data: data });
-              this.setState({ topicQuestions: data.id });
-              console.log("Document data:", data.id);
-              console.log("Document data:", data);
-            } else {
-              this.setState({ data: null });
-              console.log("No such document!");
-            }
+            this.setState({
+              data: data,
+              topicQuestions: [...this.state.topicQuestions, data.id]
+            });
+
+            console.log("Document data:", data.id);
+            console.log("Document data:", data);
+            console.log("topic questions:", this.state.topicQuestions);
+          } else {
+            this.setState({ data: null });
+            console.log("No such document!");
           }
-        })
-        .catch(error => {
-          //TODO: doesn't work
-          this.setState({ data: null });
-          console.log("Error getting document:", error);
-        });
+        }
+      });
+      // .catch(error => {
+      //   //TODO: doesn't work
+      //   this.setState({ data: null });
+      //   console.log("Error getting document:", error);
+      // });
     });
   };
-
-  componentDidMount() {
-    this.queryTopic("1.1.1");
-  }
 
   //pass in firestore question ID
   getQuestionName = e => {
@@ -62,11 +74,12 @@ class Guide extends Component {
         if (doc.exists) {
           let data = doc.data();
           this.setState({ data: data });
-          var session = dict["session"];
-          var level = dict["level"];
-          var paper = dict["paperType"];
-          var year = dict["year"];
-          var name = session + year + level + paper;
+          var session = data["session"];
+          var level = data["level"];
+          var paper = data["paperType"];
+          var year = data["year"];
+          var name = session + year + level + "P" + paper;
+          return name;
         } else {
           // doc.data() will be undefined in this case
           this.setState({ data: null });
@@ -81,6 +94,7 @@ class Guide extends Component {
 
   render() {
     return (
+      //make tree into react component
       <>
         <Global />
         <Tree name="main" defaultOpen>
@@ -125,10 +139,7 @@ class Guide extends Component {
               <Tree name="Wireless networking" />
             </Tree>
           </Tree>
-          <Tree
-            name="Topic 4: Computational thinking, problem-solving and
-programming"
-          >
+          <Tree name="Topic 4: Computational thinking, problem-solving and programming">
             <Tree name="4.1 General principles">
               <Tree name="Thinking procedurally" />
               <Tree name="Thinking logically" />
@@ -171,37 +182,6 @@ programming"
               <Tree name="D.4 Advanced program development (HL)" />
             </Tree>
           </Tree>
-          {/* 
-          <Tree name="subtree with children">
-            <Tree name="hello" />
-            <Tree name="sub-subtree with children">
-              <Tree name="child 1" style={{ color: "#37ceff" }} />
-              <Tree name="child 2" style={{ color: "#37ceff" }} />
-              <Tree name="child 3" style={{ color: "#37ceff" }} />
-              <Tree name="custom content">
-                <div
-                  style={{
-                    position: "relative",
-                    width: "100%",
-                    height: 200,
-                    padding: 10
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      background: "black",
-                      borderRadius: 5
-                    }}
-                  />
-                </div>
-              </Tree>
-            </Tree>
-            <Tree name="hello" />
-          </Tree>
-          <Tree name="world" />
-          <Tree name={<span>🙀 something something</span>} /> */}
         </Tree>
       </>
     );
