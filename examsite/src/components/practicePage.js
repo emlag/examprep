@@ -43,7 +43,7 @@ export default function practicePage() {
         allChecked: [],
     });
 
-    const [objsFromDB, setObjsFromDB] = useState([])
+    const [objFromDB, setObjFromDB] = useState({questionImageUrls:[], questionNum:""})
 
     //change the current state for one of the checkboxes
     const handleChange = (event, topicName) => {
@@ -58,6 +58,12 @@ export default function practicePage() {
     //creating variables for the states
     const {topicOne, topicTwo, topicThree, topicFour, topicFive, topicSix, topicSeven} = state;
 
+    function getRandomIntInclusive(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+    }
+
     function onSearch() {
         const db = firebase.firestore();
 
@@ -65,19 +71,25 @@ export default function practicePage() {
 
         const newQuestionRef = db.collection(cnst.DATABASE_BRANCH);
         newQuestionRef.where("topics", "array-contains-any", state.allChecked).get()
-            .then( (querySnapshot) => {
+            .then((querySnapshot) => {
 
                 let fromDB = []
 
-                querySnapshot.forEach( (doc) => {
+                querySnapshot.forEach((doc) => {
                     // doc.data() is never undefined for query doc snapshots
                     // console.log(doc.id, " => ", doc.data());
                     fromDB.push(doc.data());
                 });
 
-                setObjsFromDB(fromDB);
+                const isEmpty = fromDB === undefined || fromDB.length == 0;
+
+                if (!isEmpty){
+                    let randomImageNum = getRandomIntInclusive(0, fromDB.length);
+                    const toShow = fromDB[randomImageNum]
+                    setObjFromDB(toShow);
+                }
             })
-            .catch( (error) => {
+            .catch((error) => {
                 console.log("Error getting documents: ", error);
             });
     }
@@ -143,7 +155,7 @@ export default function practicePage() {
                 </div>
             </Container>
             <Container>
-                <QuestionCard objsFromDB = {objsFromDB}/>
+                <QuestionCard questionToShow={objFromDB}/>
             </Container>
         </div>
     )

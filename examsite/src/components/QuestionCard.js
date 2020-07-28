@@ -52,35 +52,32 @@ export default function RecipeReviewCard(props) {
         setExpanded(!expanded);
     };
 
-    function getRandomIntInclusive(min, max) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
-    }
+
 
     function imageDivs() {
-        console.log("objs here: ")
-        console.log(props.objsFromDB)
+        // console.log("objs here: ")
+        // console.log(props.objsFromDB)
 
-        const isEmpty = props.objsFromDB === undefined || props.objsFromDB.length == 0;
+        // const isEmpty = props.objsFromDB === undefined || props.objsFromDB.length == 0;
 
-        if (!isEmpty) {
-            let randomImageNum = getRandomIntInclusive(0, props.objsFromDB.length);
-            console.log(props.objsFromDB[randomImageNum])
-
-            const toShow = props.objsFromDB[randomImageNum]
+        // if (!isEmpty) {
+        //     let randomImageNum = getRandomIntInclusive(0, props.objsFromDB.length);
+        //     console.log(props.objsFromDB[randomImageNum])
+        //
+        //     const toShow = props.objsFromDB[randomImageNum]
 
             return (
-                toShow.questionImageUrls.map(url => {
+                props.questionToShow.questionImageUrls.map((url, idx) => {
                     return <CardMedia
+                        key={idx}
                         component="img"
                         alt="Question Number"
                         image={url}
-                        title={toShow.questionNum}
+                        title={props.questionToShow.questionNum}
                     />
                 })
             );
-        }
+
 
 
     }
