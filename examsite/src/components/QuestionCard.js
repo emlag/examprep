@@ -53,36 +53,40 @@ export default function RecipeReviewCard(props) {
     };
 
 
-
     function imageDivs() {
-        // console.log("objs here: ")
-        // console.log(props.objsFromDB)
-
-        // const isEmpty = props.objsFromDB === undefined || props.objsFromDB.length == 0;
-
-        // if (!isEmpty) {
-        //     let randomImageNum = getRandomIntInclusive(0, props.objsFromDB.length);
-        //     console.log(props.objsFromDB[randomImageNum])
-        //
-        //     const toShow = props.objsFromDB[randomImageNum]
-
-            return (
-                props.questionToShow.questionImageUrls.map((url, idx) => {
-                    return <CardMedia
-                        key={idx}
-                        component="img"
-                        alt="Question Number"
-                        image={url}
-                        title={props.questionToShow.questionNum}
-                    />
-                })
-            );
-
-
-
+        return (
+            props.dbResult.questionImageUrls.map((url, idx) => {
+                return <CardMedia
+                    key={idx}
+                    component="img"
+                    alt="Question Number"
+                    image={url}
+                    title={props.dbResult.questionNum}
+                />
+            })
+        );
     }
 
+    function answerDivs() {
+        return (
+            props.dbResult.answerImageUrls.map((url, idx) => {
+                return <CardMedia
+                    key={idx}
+                    component="img"
+                    alt="Question Number"
+                    image={url}
+                    title={props.dbResult.questionNum}
+                />
+            })
+        );
+    }
+
+    const questionTitle = "Topic " + props.dbResult.topics;
+    const paperInfo = "Paper " + props.dbResult.paperType + ", " + props.dbResult.session + " " + props.dbResult.year
+
+
     return (
+
         <Card className={classes.root}>
             <CardHeader
                 avatar={
@@ -95,27 +99,13 @@ export default function RecipeReviewCard(props) {
                         <MoreVertIcon/>
                     </IconButton>
                 }
-                title="Topic 1: Systems Fundamentals"
-                subheader="Paper 1, May 2019"
+                title={questionTitle}
+                subheader={paperInfo}
             />
             {imageDivs()}
-            {/*<CardMedia*/}
-            {/*    className={classes.media}*/}
-            {/*    image="https://firebasestorage.googleapis.com/v0/b/examprep-a775e.appspot.com/o/questions%2F1595272536324?alt=media&token=bd336cc5-e299-4a91-b525-be1aa004d92a"*/}
-            {/*    title="Question 1a"*/}
-            {/*/>*/}
             <CardContent>
                 <Typography variant="body2" color="textSecondary" component="p">
-                    1a: 1.1.1
-                </Typography>
-                <Typography variant="body2" color="textSecondary" component="p">
-                    1b: 1.1.4
-                </Typography>
-                <Typography variant="body2" color="textSecondary" component="p">
-                    1c: 1.1.5, 1.1.7
-                </Typography>
-                <Typography variant="body2" color="textSecondary" component="p">
-                    1d: 1.2.1
+                    {props.dbResult.subtopicMetadata}
                 </Typography>
             </CardContent>
             <CardActions disableSpacing>
@@ -146,14 +136,10 @@ export default function RecipeReviewCard(props) {
                                 <MoreVertIcon/>
                             </IconButton>
                         }
-                        title="Topic 1: Systems Fundamentals"
-                        subheader="Paper 1, May 2019"
+                        title={questionTitle}
+                        subheader={paperInfo}
                     />
-                    <CardMedia
-                        className={classes.media}
-                        image="https://firebasestorage.googleapis.com/v0/b/examprep-a775e.appspot.com/o/answers%2F1595272536327?alt=media&token=8a8b88b2-410a-4880-91dc-f8295cdf7c52"
-                        title="Question 1a"
-                    />
+                    {answerDivs()}
                 </CardContent>
             </Collapse>
         </Card>
