@@ -4,6 +4,7 @@ import * as cnst from "./Const";
 import * as firebase from "firebase";
 import {Global} from "./styles";
 import Tree from "./Tree";
+import Button from "@material-ui/core/Button";
 
 class Guide extends Component {
     constructor(props) {
@@ -18,7 +19,7 @@ class Guide extends Component {
         // this.queryTopic("1.1.1");
     }
 
-    queryTopic = e => {
+    queryTopic = (subtopic) => {
         //rename input
         const db = firebase.firestore();
 
@@ -26,7 +27,7 @@ class Guide extends Component {
         const questionRef = db.collection(cnst.DATABASE_BRANCH);
 
         // const query = questionRef.where("subtopics", "array-contains", e);
-        const query = questionRef.where("paperType", "==", 1);
+        const query = questionRef.where("subtopics", "array-contains", subtopic);
 
         query.get().then(querySnapshot => {
             querySnapshot.forEach(doc => {
@@ -34,17 +35,13 @@ class Guide extends Component {
                     let data = doc.data();
                     if (doc.exists) {
                         let data = doc.data();
-                        this.setState({
-                            data: data,
-                            topicQuestions: [...this.state.topicQuestions, data.id]
-                        });
 
-                        // console.log("Document data:", data.id);
-                        // console.log("Document data:", data);
-                        // console.log("topic questions:", this.state.topicQuestions);
+                        console.log("questions with subtopic " + subtopic);
+                        console.log("Document data:", data.id);
+                        console.log("Document data:", data);
                     } else {
                         this.setState({data: null});
-                        // console.log("No such document!");
+                        console.log("No such document!");
                     }
                 }
             });
@@ -56,42 +53,22 @@ class Guide extends Component {
         });
     };
 
-    //pass in firestore question ID
-    getQuestionName = e => {
-        const questionRef = db.collection(cnst.DATABASE_BRANCH).doc(e);
-        docRef
-            .get()
-            .then(doc => {
-                if (doc.exists) {
-                    let data = doc.data();
-                    this.setState({data: data});
-                    var session = data["session"];
-                    var level = data["level"];
-                    var paper = data["paperType"];
-                    var year = data["year"];
-                    var name = session + year + level + "P" + paper;
-                    return name;
-                } else {
-                    // doc.data() will be undefined in this case
-                    this.setState({data: null});
-                    console.log("No such document!");
-                }
-            })
-            .catch(function (error) {
-                this.setState({data: null});
-                console.log("Error getting document:", error);
-            });
-    };
-
     subTopics = (subheader, descDict) => {
         const subTopicContents = descDict[subheader];
         const subTopicKeys = Object.keys(subTopicContents);
 
-        const subtopicsTrees = subTopicKeys.map((subTopicKey, idx) =>{
+        const subtopicsTrees = subTopicKeys.map((subTopicKey, idx) => {
             const subtopicTitle = subTopicKey + " " + subTopicContents[subTopicKey]
-            return(
+            return (
                 <Tree name={subtopicTitle} key={idx}>
-
+                    <div style={{position: 'relative', width: '100%', height: 200, padding: 10}}>
+                        {/*<div style={{width: '100%', height: '100%', background: 'black', borderRadius: 5}}/>*/}
+                        <Button variant="outlined" color="primary" onClick={() => {
+                            this.queryTopic(subTopicKey)
+                        }}>
+                            Query Questions
+                        </Button>
+                    </div>
                 </Tree>
             )
         });
@@ -101,7 +78,7 @@ class Guide extends Component {
 
     subHeaders = (header, descDict) => {
         const subheaders = Object.keys(descDict[header]);
-        const subheaderTrees = subheaders.map((subheaderName, idx) =>{
+        const subheaderTrees = subheaders.map((subheaderName, idx) => {
 
             return (
                 <Tree name={subheaderName} key={idx}>
@@ -141,7 +118,7 @@ class Guide extends Component {
     buildHLTree = (topic) => {
         return (
             <div>
-                <Tree name={cnst.TOPICS[topic] + " (HL)"} style={{ color: '#2980b9' }}>
+                <Tree name={cnst.TOPICS[topic] + " (HL)"} style={{color: '#2980b9'}}>
                     {this.headers(topic)}
                 </Tree>
             </div>
