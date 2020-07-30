@@ -107,45 +107,92 @@ export const TOPIC_2_DESC = {
 export const TOPIC_3_DESC = {
     "3.1 Networks": {
         "Network fundamentals": {
-            "3.1.1": ""
+            "3.1.1": "Identify different types of networks.",
+            "3.1.2": "Outline the importance of standards in the construction of networks.",
+            "3.1.3": "Describe how communication over networks is broken down into different layers.",
+            "3.1.4": "Identify the technologies required to provide a VPN.",
+            "3.1.5": "Evaluate the use of a VPN."
         },
         "Data transmission": {
-            "3.1.6": ""
+            "3.1.6": "Define the terms: protocol, data packet.",
+            "3.1.7": "Explain why protocols are necessary.",
+            "3.1.8": "Explain why the speed of data transmission across a network can vary.",
+            "3.1.9": "Explain why compression of data is often necessary when transmitting across a network.",
+            "3.1.10": "Outline the characteristics of different transmission media.",
+            "3.1.11": "Explain how data is transmitted by packet switching."
         },
         "Wireless networking": {
-            "3.1.12": ""
+            "3.1.12": "Outline the advantages and disadvantages of wireless networks.",
+            "3.1.13": "Describe the hardware and software components of a wireless network.",
+            "3.1.14": "Describe the characteristics of wireless networks.",
+            "3.1.15": "Describe the different methods of network security.",
+            "3.1.16": "Evaluate the advantages and disadvantages of each method of network security."
         },
     }
 }
 export const TOPIC_4_DESC = {
     "4.1 General principles": {
         "Thinking procedurally": {
-            "4.1.1": ""
+            "4.1.1": "Identify the procedure appropriate to solving a problem.",
+            "4.1.2": "Evaluate whether the order in which activities are undertaken will result in the required outcome.",
+            "4.1.3": "Explain the role of sub-procedures in solving a problem."
         },
         "Thinking logically": {
-            "4.1.4": ""
+            "4.1.4": "Identify when decision-making is required in a specified situation.",
+            "4.1.5": "Identify the decisions required for the solution to a specified problem.",
+            "4.1.6": "Identify the condition associated with a given decision in a specified problem.",
+            "4.1.7": "Explain the relationship between the decisions and conditions of a system.",
+            "4.1.8": "Deduce logical rules for real-world situations."
         },
         "Thinking ahead": {
-            "4.1.9": ""
+            "4.1.9": "Identify the inputs and outputs required in a solution.",
+            "4.1.10": "Identify pre-planning in a suggested problem and solution.",
+            "4.1.11": "Explain the need for pre-conditions when executing an algorithm.",
+            "4.1.12": "Outline the pre- and post-conditions to a specified problem.",
+            "4.1.13": "Identify exceptions that need to be considered in a specified problem solution."
         },
         "Thinking concurrently": {
-            "4.1.14": ""
+            "4.1.14": "Identify the parts of a solution that could be implemented concurrently.",
+            "4.1.15": "Describe how concurrent processing can be used to solve a problem.",
+            "4.1.16": "Evaluate the decision to use concurrent processing in solving a problem."
         },
         "Thinking abstractly": {
-            "4.1.17": ""
+            "4.1.17": "Identify examples of abstraction.",
+            "4.1.18": "Explain why abstraction is required in the derivation of computational solutions for a specified situation.",
+            "4.1.19": "Construct an abstraction from a specified situation.",
+            "4.1.20": "Distinguish between a real-world entity and its abstraction."
         }
     },
     "4.2 Connecting computational thinking and program design": {
         "Algorithms":{
-            "4.2.1": ""
+            "4.2.1": "Describe the characteristics of standard algorithms on linear arrays.",
+            "4.2.2": "Outline the standard operations of collections.",
+            "4.2.3": "Discuss an algorithm to solve a specific problem.",
+            "4.2.4": "Analyse an algorithm presented as a flow chart.",
+            "4.2.5": "Analyse an algorithm presented as pseudocode.",
+            "4.2.6": "Construct pseudocode to represent an algorithm.",
+            "4.2.7": "Suggest suitable algorithms to solve a specific problem.",
+            "4.2.8": "Deduce the efficiency of an algorithm in the context of its use.",
+            "4.2.9": "Determine the number of times a step in an algorithm will be performed for given input data."
         }
     },
     "4.3 Introduction to programming" : {
         "Nature of programming languages" : {
-            "4.3.1" : ""
+            "4.3.1": "State the fundamental operations of a computer.",
+            "4.3.2": "Distinguish between fundamental and compound operations of a computer.",
+            "4.3.3": "Explain the essential features of a computer language.",
+            "4.3.4": "Explain the need for higher level languages.",
+            "4.3.5": "Outline the need for a translation process from a higher level language to machine executable code."
         },
         "Use of programming languages" : {
-            "4.3.6" : ""
+            "4.3.6": "Define the terms: variable, constant, operator, object.",
+            "4.3.7": "Define the operators =, ≠, <, <=, >, >=, mod, div.",
+            "4.3.8": "Analyse the use of variables, constants and operators in algorithms.",
+            "4.3.9": "Construct algorithms using loops, branching.",
+            "4.3.10": "Describe the characteristics and applications of a collection.",
+            "4.3.11": "Construct algorithms using the access methods of a collection.",
+            "4.3.12": "Discuss the need for sub-programmes and collections within programmed solutions.",
+            "4.3.13": "Construct algorithms using pre- defined sub-programmes, one- dimensional arrays and/or collections.",
         }
     }
 }
