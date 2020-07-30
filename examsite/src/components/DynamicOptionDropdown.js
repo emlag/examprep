@@ -40,7 +40,7 @@ function DynamicOptionDropdown(props) {
                         <option value="" disabled="true" selected="true">Select {itemToChange}</option>
                         {
                             optionItems.map((item, index) => {
-                        return <option value={itemValues[index]}>{item}</option>;
+                        return <option value={itemValues[index]} key={index}>{item}</option>;
                         })}
                         {/* <option>1.1.1</option>
                         <option>1.1.2</option>
