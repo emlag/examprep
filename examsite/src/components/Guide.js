@@ -86,12 +86,12 @@ class Guide extends Component {
     subTopics = (subheader, descDict) => {
         const subTopicContents = descDict[subheader];
         const subTopicKeys = Object.keys(subTopicContents);
-        console.log(subTopicKeys);
 
         const subtopicsTrees = subTopicKeys.map((subTopicKey, idx) =>{
             const subtopicTitle = subTopicKey + " " + subTopicContents[subTopicKey]
             return(
                 <Tree name={subtopicTitle} key={idx}>
+
                 </Tree>
             )
         });
@@ -138,6 +138,16 @@ class Guide extends Component {
         )
     }
 
+    buildHLTree = (topic) => {
+        return (
+            <div>
+                <Tree name={cnst.TOPICS[topic] + " (HL)"} style={{ color: '#2980b9' }}>
+                    {this.headers(topic)}
+                </Tree>
+            </div>
+        )
+    }
+
     render() {
         return (
             <>
@@ -145,9 +155,9 @@ class Guide extends Component {
                 {this.buildTree("2")}
                 {this.buildTree("3")}
                 {this.buildTree("4")}
-                {this.buildTree("5")}
-                {this.buildTree("6")}
-                {this.buildTree("7")}
+                {this.buildHLTree("5")}
+                {this.buildHLTree("6")}
+                {this.buildHLTree("7")}
                 {this.buildTree("D")}
             </>
         );
