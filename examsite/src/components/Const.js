@@ -199,61 +199,135 @@ export const TOPIC_4_DESC = {
 export const TOPIC_5_DESC = {
     "5.1 Abstract data structures (HL)": {
         "Thinking recursively": {
-            "5.1.1": ""
+            "5.1.1": "Identify a situation that requires the use of recursive thinking.",
+            "5.1.2": "Identify recursive thinking in a specified problem solution.",
+            "5.1.3": "Trace a recursive algorithm to express a solution to a problem."
         },
         "Abstract data structures": {
-            "5.1.4": ""
+            "5.1.4": "Describe the characteristics of a two- dimensional array.",
+            "5.1.5": "Construct algorithms using two- dimensional arrays.",
+            "5.1.6": "Describe the characteristics and applications of a stack.",
+            "5.1.7": "Construct algorithms using the access methods of a stack.",
+            "5.1.8": "Describe the characteristics and applications of a queue.",
+            "5.1.9": "Construct algorithms using the access methods of a queue.",
+            "5.1.10": "Explain the use of arrays as static stacks and queues."
         },
         "Linked lists": {
-            "5.1.11": ""
+            "5.1.11": "Describe the features and characteristics of a dynamic data structure.",
+            "5.1.12": "Describe how linked lists operate logically.",
+            "5.1.13": "Sketch linked lists (single, double and circular)."
         },
         "Trees": {
-            "5.1.14": ""
+            "5.1.14": "Describe how trees operate logically (both binary and non-binary).",
+            "5.1.15": "Define the terms: parent, left-child, right-child, subtree, root and leaf.",
+            "5.1.16": "State the result of inorder, postorder and preorder tree traversal.",
+            "5.1.17": "Sketch binary trees."
         },
         "Applications": {
-            "5.1.18": ""
+            "5.1.18": "Define the term dynamic data structure.",
+            "5.1.19": "Compare the use of static and dynamic data structures.",
+            "5.1.20": "Suggest a suitable structure for a given situation."
         }
     }
 }
 export const TOPIC_6_DESC = {
     "6.1 Resource management (HL)": {
         "System resources": {
-            "6.1.1": ""
+            "6.1.1": "Identify the resources that need to be managed within a computer system.",
+            "6.1.2": "Evaluate the resources available in a variety of computer systems.",
+            "6.1.3": "Identify the limitations of a range of resources in a specified computer system.",
+            "6.1.4": "Describe the possible problems resulting from the limitations in the resources in a computer system."
         },
         "Role of the operating system": {
-            "6.1.5": ""
+            "6.1.5": "Explain the role of the operating system in terms of managing memory, peripherals and hardware interfaces.",
+            "6.1.7": "Outline OS resource management techniques: scheduling, policies, multitasking, virtual memory, paging, interrupt, polling.",
+            "6.1.8": "Discuss the advantages of producing a dedicated operating system for a device.",
+            "6.1.9": "Outline how an operating system hides the complexity of the hardware from users and applications."
         }
     }
 }
 export const TOPIC_7_DESC = {
     "7.1 Control (HL)": {
         "Centralized control systems": {
-            "7.1.1": ""
+            "7.1.1": "Discuss a range of control systems.",
+            "7.1.2": "Outline the uses of microprocessors and sensor input in control systems.",
+            "7.1.3": "Evaluate different input devices for the collection of data in specified situations.",
+            "7.1.4": "Explain the relationship between a sensor, the processor and an output transducer.",
+            "7.1.5": "Describe the role of feedback in a control system.",
+            "7.1.6": "Discuss the social impacts and ethical considerations associated with the use of embedded systems."
         },
         "Distributed systems": {
-            "7.1.7": ""
+            "7.1.7": "Compare a centrally controlled system with a distributed system.",
+            "7.1.8": "Outline the role of autonomous agents acting within a larger system."
         }
     }
 }
 export const TOPIC_D_DESC = {
     "D.1 Objects as a programming concept": {
         "Objects": {
-            "D.1.1": ""
+            "D.1.1": "Outline the general nature of an object.",
+            "D.1.2": "Distinguish between an object (definition, template or class) and instantiation.",
+            "D.1.3": "Construct unified modelling language (UML) diagrams to represent object designs.",
+            "D.1.4": "Interpret UML diagrams.",
+            "D.1.5": "Describe the process of decomposition into several related objects.",
+            "D.1.6": "Describe the relationships between objects for a given problem.",
+            "D.1.7": "Outline the need to reduce dependencies between objects in a given problem.",
+            "D.1.8": "Construct related objects for a given problem.",
+            "D.1.9": "Explain the need for different data types to represent data items.",
+            "D.1.10": "Describe how data items can be passed to and from actions as parameters."
         },
     },
     "D.2 Features of OOP" : {
         "Object Oriented Programming": {
-            "D.2.1" : ""
+            "D.2.1": "Define the term encapsulation.",
+            "D.2.2": "Define the term inheritance.",
+            "D.2.3": "Define the term polymorphism.",
+            "D.2.4": "Explain the advantages of encapsulation.",
+            "D.2.5": "Explain the advantages of inheritance.",
+            "D.2.6": "Explain the advantages of polymorphism.",
+            "D.2.7": "Describe the advantages of libraries of objects.",
+            "D.2.8": "Describe the disadvantages of OOP.",
+            "D.2.9": "Discuss the use of programming teams.",
+            "D.2.10": "Explain the advantages of modularity in program development."
         }
     },
     "D.3 Program Development" : {
         "Programming in Java" : {
-            "D.3.1": ""
+            "D.3.1": "Define the terms: class, identifier, primitive, instance variable, parameter variable, local variable.",
+            "D.3.2": "Define the terms: method, accessor, mutator, constructor, signature, return value.",
+            "D.3.3": "Define the terms: private, protected, public, extends, static.",
+            "D.3.4": "Describe the uses of the primitive data types and the reference class string.",
+            "D.3.5": "Construct code to implement assessment statements D.3.1–D.3.4.",
+            "D.3.6": "Construct code examples related to selection statements.",
+            "D.3.7": "Construct code examples related to repetition statements.",
+            "D.3.8": "Construct code examples related to static arrays.",
+            "D.3.9": "Discuss the features of modern programming languages that enable internationalization.",
+            "D.3.10": "Discuss the ethical and moral obligations of programmers."
         }
     },
     "D.4 Advanced program development (HL)" : {
-        "Advanced Programming Concepts": {
-            "D.4.1" : ""
+        "Recursion": {
+            "D.4.1" : "Define the term recursion.",
+            "D.4.2" : "Describe the application of recursive algorithms.",
+            "D.4.3" : "Construct algorithms that use recursion.",
+            "D.4.4" : "Trace recursive algorithms.",
+        },
+        "Object References": {
+            "D.4.5": "Define the term object reference.",
+            "D.4.6": "Construct algorithms that use reference mechanisms."
+        },
+        "Abstract Data Structures": {
+            "D.4.7" : "Identify the features of the abstract data type (ADT) list.",
+            "D.4.8" : "Describe applications of lists.",
+            "D.4.9" : "Construct algorithms using a static implementation of a list.",
+            "D.4.10" : "Construct list algorithms using object references.",
+            "D.4.11" : "Construct algorithms using the standard library collections included in JETS.",
+            "D.4.12" : "Trace algorithms using the implementations described in assessment statements D.4.9–D.4.11.",
+            "D.4.13" : "Explain the advantages of using library collections.",
+            "D.4.14" : "Outline the features of ADT’s stack, queue and binary tree.",
+        },
+        "Documentation and Style": {
+            "D.4.15" : "Explain the importance of style and naming conventions in code."
         }
     }
 }
