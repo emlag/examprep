@@ -624,3 +624,31 @@ export const TOPIC_DESCS = {
   "7": TOPIC_7_DESC,
   D: TOPIC_D_DESC
 };
+
+export const PAPER_FOLDER = "IBCS Past Papers";
+export const PAPER_YEARS = ["2014", "2015"];
+export const PAPER_MAY = "May";
+export const PAPER_NOV = "Nov";
+export const PAPER_P1 = "P1";
+export const PAPER_P2 = "P2";
+export const PAPER_P3 = "P3";
+export const PAPER_SL = "SL";
+export const PAPER_HL = "HL";
+
+export const PAPER_FILE_P1_SL = "Computer_science_paper_1__SL.pdf";
+export const PAPER_FILE_P1_HL = "Computer_science_paper_1__HL.pdf";
+export const PAPER_FILE_P1_SL_MARK =
+  "Computer_science_paper_1__SL_markscheme.pdf";
+export const PAPER_FILE_P1_HL_MARK =
+  "Computer_science_paper_1__HL_markscheme.pdf";
+
+export const PAPER_FILE_P2_SL = "Computer_science_paper_2__SL.pdf";
+export const PAPER_FILE_P2_HL = "Computer_science_paper_2__HL.pdf";
+export const PAPER_FILE_P2_SL_MARK =
+  "Computer_science_paper_2__SL_markscheme.pdf";
+export const PAPER_FILE_P2_HL_MARK =
+  "Computer_science_paper_2__HL_markscheme.pdf";
+
+export const PAPER_FILE_P3_CASE = "Computer_science_paper_3__case_study_HL.pdf";
+export const PAPER_FILE_P3 = "Computer_science_paper_3__HL.pdf";
+export const PAPER_FILE_P3_MARK = "Computer_science_paper_3__HL_markscheme.pdf";
