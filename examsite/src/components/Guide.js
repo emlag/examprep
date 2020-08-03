@@ -4,6 +4,7 @@ import * as cnst from "./Const";
 import * as firebase from "firebase";
 import {Global} from "./styles";
 import Tree from "./Tree";
+import Leaf from "./Leaf";
 import Button from "@material-ui/core/Button";
 
 class Guide extends Component {
@@ -19,39 +20,7 @@ class Guide extends Component {
         // this.queryTopic("1.1.1");
     }
 
-    queryTopic = (subtopic) => {
-        //rename input
-        const db = firebase.firestore();
 
-        //https://stackoverflow.com/questions/48479717/how-do-i-render-firestore-data-in-react
-        const questionRef = db.collection(cnst.DATABASE_BRANCH);
-
-        // const query = questionRef.where("subtopics", "array-contains", e);
-        const query = questionRef.where("subtopics", "array-contains", subtopic);
-
-        query.get().then(querySnapshot => {
-            querySnapshot.forEach(doc => {
-                {
-                    let data = doc.data();
-                    if (doc.exists) {
-                        let data = doc.data();
-
-                        console.log("questions with subtopic " + subtopic);
-                        console.log("Document data:", data.id);
-                        console.log("Document data:", data);
-                    } else {
-                        this.setState({data: null});
-                        console.log("No such document!");
-                    }
-                }
-            });
-            // .catch(error => {
-            //   //TODO: doesn't work
-            //   this.setState({ data: null });
-            //   console.log("Error getting document:", error);
-            // });
-        });
-    };
 
     subTopics = (subheader, descDict) => {
         const subTopicContents = descDict[subheader];
@@ -60,16 +29,16 @@ class Guide extends Component {
         const subtopicsTrees = subTopicKeys.map((subTopicKey, idx) => {
             const subtopicTitle = subTopicKey + " " + subTopicContents[subTopicKey]
             return (
-                <Tree name={subtopicTitle} key={idx}>
+                <Leaf name={subtopicTitle} subtopic={subTopicKey} key={idx}>
                     <div style={{position: 'relative', width: '100%', height: 200, padding: 10}}>
                         {/*<div style={{width: '100%', height: '100%', background: 'black', borderRadius: 5}}/>*/}
-                        <Button variant="outlined" color="primary" onClick={() => {
-                            this.queryTopic(subTopicKey)
-                        }}>
-                            Query Questions
-                        </Button>
+                        {/*<Button variant="outlined" color="primary" onClick={() => {*/}
+                        {/*    this.queryTopic(subTopicKey)*/}
+                        {/*}}>*/}
+                        {/*    Query Questions*/}
+                        {/*</Button>*/}
                     </div>
-                </Tree>
+                </Leaf>
             )
         });
 
