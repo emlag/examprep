@@ -22,33 +22,10 @@ const table = {
   textAlign: "center",
   fontFamily: "Arial",
   borderCollapse: "collapse",
-  border: "3px",
-  border: "solid",
-  border: "#ddd",
-  width: "100%"
+  border: "1px solid black",
+  width: "100%",
+  padding: "5px"
 };
-
-// #students td,
-// #students th {
-//   border: 1px solid #ddd;
-//   padding: 8px;
-// }
-
-// #students tr:nth-child(even) {
-//   background-color: #f2f2f2;
-// }
-
-// #students tr:hover {
-//   background-color: #ddd;
-// }
-
-// #students th {
-//   padding-top: 12px;
-//   padding-bottom: 12px;
-//   text-align: center;
-//   background-color: #4caf50;
-//   color: white;
-// }
 
 class homepage extends Component {
   constructor(props) {
@@ -73,44 +50,44 @@ class homepage extends Component {
   //   }
   // }
 
-  populateTable() {
-    const currentYear = 2015;
-    for (var i = 2013; i <= currentYear; i++) {
-      console.log("year:", i);
-      const paperYear = i;
-      return (
-        <tr key={paperYear}>
-          <td>{paperYear}</td>
-          <td>"filler"</td>
-        </tr>
-      );
-    }
-  }
+  // populateTable() {
+  //   const currentYear = 2015;
+  //   for (var i = 2013; i <= currentYear; i++) {
+  //     console.log("year:", i);
+  //     const paperYear = i;
+  //     return (
+  //       <tr key={paperYear}>
+  //         <td>{paperYear}</td>
+  //         <td>"filler"</td>
+  //       </tr>
+  //     );
+  //   }
+  // }
 
-  renderTableData() {
-    this.populateTable();
-    Object.entries(this.state.papers).forEach(([year, value]) => {
-      console.log("year:", year);
-      console.log("value:", value);
-      return (
-        <tr key={year}>
-          <td>{year}</td>
-          <td>{value}</td>
-          {/* <td>
-              {nov_p1}, {nov_p2}, {nov_p3}
-            </td> */}
-        </tr>
-      );
-    });
+  // renderTableData() {
+  //   this.populateTable();
+  //   Object.entries(this.state.papers).forEach(([year, value]) => {
+  //     console.log("year:", year);
+  //     console.log("value:", value);
+  //     return (
+  //       <tr key={year}>
+  //         <td>{year}</td>
+  //         <td>{value}</td>
+  //         {/* <td>
+  //             {nov_p1}, {nov_p2}, {nov_p3}
+  //           </td> */}
+  //       </tr>
+  //     );
+  //   });
 
-    // const { year, value } = paper; //destructuring
-  }
+  //   // const { year, value } = paper; //destructuring
+  // }
 
   renderTableHeader() {
-    let header = ["year", cnst.PAPER_MAY, cnst.PAPER_NOV];
-    return header.map((key, index) => {
-      return <th key={index}>{key.toUpperCase()}</th>;
-    });
+    // let header = ["year", cnst.PAPER_MAY, cnst.PAPER_NOV];
+    // return header.map((key, index) => {
+    //   return <th key={index}>{key.toUpperCase()}</th>;
+    // });
   }
 
   getSL1() {
@@ -137,12 +114,18 @@ class homepage extends Component {
     const yearRows = years.map((year, idx) => {
       return (
         <tr key={idx}>
-          <td>{year}</td>
-          <td>{this.getSL1()}</td>
-          <td>{this.getSL2()}</td>
-          <td>{this.getHL1()}</td>
-          <td>{this.getHL2()}</td>
-          <td>{this.getHL3()}</td>
+          <td style={table}>{year}</td>
+          <td style={table}>{this.getSL1()}</td>
+          <td style={table}>{this.getSL2()}</td>
+          <td style={table}>{this.getHL1()}</td>
+          <td style={table}>{this.getHL2()}</td>
+          <td style={table}>{this.getHL3()}</td>
+
+          <td style={table}>{this.getSL1()}</td>
+          <td style={table}>{this.getSL2()}</td>
+          <td style={table}>{this.getHL1()}</td>
+          <td style={table}>{this.getHL2()}</td>
+          <td style={table}>{this.getHL3()}</td>
         </tr>
       );
     });
@@ -153,9 +136,19 @@ class homepage extends Component {
     //Whenever our class runs, render method will be called automatically, it may have already defined in the constructor behind the scene.
     return (
       <div>
-        <h1 id="title">Papers by Year</h1>
-        <table id="papers">
-          <tr>{this.renderTableHeader()}</tr>
+        <h1 id="title" style={title}>
+          Papers by Year
+        </h1>
+        <table id="papers" style={table}>
+          <tr style={table}>
+            <th key="1">YEAR</th>
+            <th key="2" colspan="5">
+              MAY
+            </th>
+            <th key="3" colSpan="5">
+              NOV
+            </th>
+          </tr>
           <tbody>{this.buildTable(cnst.PAPER_YEARS)}</tbody>
         </table>
       </div>
