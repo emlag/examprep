@@ -9,10 +9,6 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import * as cnst from "./Const";
 
-// function homepage() {
-//   return <h1>Homepage Here</h1>;
-// }
-
 const title = {
   textAlign: "center",
   fontFamily: "Arial"
@@ -23,7 +19,6 @@ const table = {
   fontFamily: "Arial",
   borderCollapse: "collapse",
   border: "1px solid black",
-  width: "100%",
   padding: "5px"
 };
 
@@ -50,39 +45,6 @@ class homepage extends Component {
   //   }
   // }
 
-  // populateTable() {
-  //   const currentYear = 2015;
-  //   for (var i = 2013; i <= currentYear; i++) {
-  //     console.log("year:", i);
-  //     const paperYear = i;
-  //     return (
-  //       <tr key={paperYear}>
-  //         <td>{paperYear}</td>
-  //         <td>"filler"</td>
-  //       </tr>
-  //     );
-  //   }
-  // }
-
-  // renderTableData() {
-  //   this.populateTable();
-  //   Object.entries(this.state.papers).forEach(([year, value]) => {
-  //     console.log("year:", year);
-  //     console.log("value:", value);
-  //     return (
-  //       <tr key={year}>
-  //         <td>{year}</td>
-  //         <td>{value}</td>
-  //         {/* <td>
-  //             {nov_p1}, {nov_p2}, {nov_p3}
-  //           </td> */}
-  //       </tr>
-  //     );
-  //   });
-
-  //   // const { year, value } = paper; //destructuring
-  // }
-
   renderTableHeader() {
     // let header = ["year", cnst.PAPER_MAY, cnst.PAPER_NOV];
     // return header.map((key, index) => {
@@ -91,7 +53,7 @@ class homepage extends Component {
   }
 
   getSL1() {
-    return "SLP1";
+    return <a href="https://example.com/faq.html"> SLP1 </a>;
   }
 
   getSL2() {
@@ -139,13 +101,23 @@ class homepage extends Component {
         <h1 id="title" style={title}>
           Papers by Year
         </h1>
-        <table id="papers" style={table}>
+        <table id="papers">
           <tr style={table}>
-            <th key="1">YEAR</th>
-            <th key="2" colspan="5">
+            <th key="1" style={{ border: "1px solid black", padding: "5px" }}>
+              YEAR
+            </th>
+            <th
+              key="2"
+              colspan="5"
+              style={{ border: "1px solid black", padding: "5px" }}
+            >
               MAY
             </th>
-            <th key="3" colSpan="5">
+            <th
+              key="3"
+              colSpan="5"
+              style={{ border: "1px solid black", padding: "5px" }}
+            >
               NOV
             </th>
           </tr>
