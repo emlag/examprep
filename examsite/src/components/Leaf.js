@@ -5,11 +5,14 @@ import * as Icons from "./icons";
 import React, { memo, useState } from "react";
 import * as firebase from "firebase";
 import * as cnst from "./Const";
+import QuestionModal from "./QuestionModal";
+
 
 const Leaf = memo(({ children, name, subtopic, style, defaultOpen = false }) => {
   const [isOpen, setOpen] = useState(defaultOpen);
   const previous = usePrevious(isOpen);
   const [info, setInfo] = useState("--");
+  const [allInfo, setAllInfo] = useState([]);
 
   const [bind, { height: viewHeight }] = useMeasure();
   const { height, opacity, transform } = useSpring({
@@ -35,6 +38,8 @@ const Leaf = memo(({ children, name, subtopic, style, defaultOpen = false }) => 
         const query = questionRef.where("subtopics", "array-contains", subtopic);
 
         query.get().then(querySnapshot => {
+            let infoFound = [];
+
             querySnapshot.forEach(doc => {
                 {
                     let data = doc.data();
@@ -44,19 +49,33 @@ const Leaf = memo(({ children, name, subtopic, style, defaultOpen = false }) => 
                         console.log("questions with subtopic " + subtopic);
                         console.log("Document data:", data.id);
                         console.log("Document data:", data);
-                        setInfo(data.year + " " + data.session + " " + "P" + data.paperType + data.level + " " + "Q" + data.questionNum);
+                        infoFound.push(data)
+                        //setInfo(data.year + " " + data.session + " " + "P" + data.paperType + data.level + " " + "Q" + data.questionNum);
                     } else {
                         console.log("No such document!");
                     }
                 }
             });
-            // .catch(error => {
-            //   //TODO: doesn't work
-            //   this.setState({ data: null });
-            //   console.log("Error getting document:", error);
-            // });
+
+            setAllInfo(infoFound);
         });
     };
+
+  function allInfoDivs() {
+      const divs = allInfo.map((data, idx) => {
+          const title = data.year + " " + data.session + " " + "P" + data.paperType + data.level + " " + "Q" + data.questionNum;
+          return (
+              <div>
+                  {/*{title}*/}
+                  <QuestionModal title={title} data={data}>
+
+                  </QuestionModal>
+              </div>
+          )
+      })
+
+      return divs;
+  }
 
   return (
     <Frame>
@@ -72,7 +91,7 @@ const Leaf = memo(({ children, name, subtopic, style, defaultOpen = false }) => 
         }}
       >
         <a.div style={{ transform }} {...bind} children={children} >
-            {info}
+            {allInfoDivs()}
         </a.div>
       </Content>
     </Frame>

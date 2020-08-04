@@ -87,7 +87,7 @@ class Guide extends Component {
     buildHLTree = (topic) => {
         return (
             <div>
-                <Tree name={cnst.TOPICS[topic] + " (HL)"} style={{color: '#2980b9'}}>
+                <Tree name={cnst.TOPICS[topic] + " (HL)"} style={{color: '#d35400'}}>
                     {this.headers(topic)}
                 </Tree>
             </div>
