@@ -7,8 +7,9 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
+import { Link } from "react-router";
 import * as cnst from "./Const";
-import PDF from "../../../IBCS Past Papers";
+import Pdf from "../../../IBCS Past Papers/2015/May/P1/HL/Computer_science_paper_1__SL.pdf";
 
 const title = {
   textAlign: "center",
@@ -54,7 +55,31 @@ class homepage extends Component {
   }
 
   getSL1() {
-    return <a href="https://example.com/faq.html"> SLP1 </a>;
+    var link =
+      "../../../IBCS Past Papers" +
+      "/" +
+      cnst.PAPER_YEARS[0] +
+      "/" +
+      cnst.PAPER_MAY +
+      "/" +
+      cnst.PAPER_P1 +
+      "/" +
+      cnst.PAPER_HL +
+      "/" +
+      cnst.PAPER_FILE_P1_SL;
+
+    // return (
+    //   <Link to={link} activeClassName="current">
+    //     SLP1
+    //   </Link>
+    // );
+    return (
+      <a href={Pdf} target="_blank">
+        SLP1
+      </a>
+    );
+
+    // return <a href="https://example.com/faq.html"> SLP1 </a>;
   }
 
   getSL2() {
@@ -84,11 +109,11 @@ class homepage extends Component {
           <td style={table}>{this.getHL2()}</td>
           <td style={table}>{this.getHL3()}</td>
 
-          <td style={table}>{this.getSL1()}</td>
+          {/* <td style={table}>{this.getSL1()}</td>
           <td style={table}>{this.getSL2()}</td>
           <td style={table}>{this.getHL1()}</td>
           <td style={table}>{this.getHL2()}</td>
-          <td style={table}>{this.getHL3()}</td>
+          <td style={table}>{this.getHL3()}</td> */}
         </tr>
       );
     });
