@@ -8,7 +8,9 @@ from pdfminer.pdfpage import PDFPage
 from pdfminer.layout import *
 from pdf2image import convert_from_path
 
-"""THREE CASES:
+"""
+FOR MARKSCHEME:
+THREE CASES:
 1. <LTTextBoxVertical(30) 42.730,715.548,48.730,745.296 ' 1\n'>
 2. <LTTextBoxHorizontal(28) 42.730,715.308,54.730,758.904 '4. \n \n \n'>
 3. <LTTextBoxHorizontal(3) 42.730,646.188,502.280,662.256 '10.  Award [1 mark...
@@ -26,7 +28,7 @@ CONTINUED CASES:
     no "Question _ continued" trigger
 """
 
-pdfName = "examsite/papers/cs2018q.pdf"
+pdfName = "examsite/papers/cs2018Mq.pdf"
 document = open(pdfName, "rb") #Create resource manager
 pdf_file = PdfFileReader(open(pdfName,"rb"))
 rsrcmgr = PDFResourceManager()
@@ -39,21 +41,22 @@ isNewMarkscheme = True
 if isMarkscheme:
     isNewMarkscheme = True if int(input("Enter year please: (eg. 2014)")) > 2014 else False #if year entered is > 2014, then isNewMarkscheme = True
 
-outputFolder = "examsite/pdfParses/"
+#config output path folders
+outputFolder = "examsite/pdfParses/"  
 outputFolder += "questionsOutput" if not isMarkscheme else "markschemeOutput"
 
-questionRegexMatch = re.compile(r"(\d+\.(\D|\s*$))") #ADDED (\D|\s*$) TO PREVENT THINGS LIKE "100.4" FROM MATCHING
+#regex matches to check for questions and subquestions
+questionRegexMatch = re.compile(r"(\d+\.(\D|\s*$))") #EDIT: ADDED (\D|\s*$) TO PREVENT THINGS LIKE "100.4" FROM MATCHING
 subQuestionRegexMatch = re.compile(r"\(\w\)")
-
 questionContinued = re.compile(r"\(*Q*uestion \d+ continued\)*")
 
-parsingQuestionNum = 0
+#vars to keep track of question numbers for parsing and output purposes
+parsingQuestionNum = 0 #prevents triggers for textboxes that contain a digit but are not a question num
 filenameQuestionNum = 0
 contQuestionMarker = ""
 
-for index, page in enumerate(PDFPage.get_pages(document)):
-    print("++++++++++++ NEXT PAGE ++++++++")
-    firstQuestionOnPage = True
+for index, page in enumerate(PDFPage.get_pages(document)): #parse page by page
+    firstQuestionOnPage = True #used mainly for subquestion checking so it only adds the first subquestion's y value of a question, keeps the other subqs in 1 image
     noQuestionIndicator = True #whether or not there's a question trigger for this whole page
     noSubQuestionIndicator = True #whether or not there's a subquestion trigger for continuedQuestion
     continuedQuestion = False #whether or not it's a continued question (i.e. "Question _ continued")
@@ -74,8 +77,8 @@ for index, page in enumerate(PDFPage.get_pages(document)):
                     print(stripped)
                     firstQuestionOnPage = False
                     noQuestionIndicator = False
-                    yValuesForQuestion.append(element.y1)
-                    parsingQuestionNum += 1
+                    yValuesForQuestion.append(element.y1) #add the question to crop for later
+                    parsingQuestionNum += 1 
             elif isinstance(element, LTTextBoxHorizontal): #CASE 2 AND 3, CASE 4 AND 5
                 stripped = element.get_text().strip()
                 if re.search("^\d+\.(\s+|$)", stripped): #CASE 2 AND 3
@@ -84,69 +87,60 @@ for index, page in enumerate(PDFPage.get_pages(document)):
                     
                     if continuedQuestion or (isNewMarkscheme and len(yValuesForSubQuestion) > 0): #CASE 4 AND 5 AND 6 OR CASE 8
                         if (not isNewMarkscheme and len(yValuesForSubQuestion) > 0) \
-                            or (isNewMarkscheme and yValuesForSubQuestion[0] > element.y1):
-                            yValuesForQuestion.append(yValuesForSubQuestion[0])
-                            print("add previous sub question")
+                            or (isNewMarkscheme and yValuesForSubQuestion[0] > element.y1): #if old markscheme and there's subquestions, or if new markscheme and the subquestion is above currently parsed question
+                            yValuesForQuestion.append(yValuesForSubQuestion[0]) #add the subquestion to crop for later
                         elif noSubQuestionIndicator: #CASE 7
-                            yValuesForQuestion.append(tempYForContinued)
-                        indexesOfOverflowQ.append(len(yValuesForQuestion) - 1)
+                            yValuesForQuestion.append(tempYForContinued) #add the text to crop for later
+                        indexesOfOverflowQ.append(len(yValuesForQuestion) - 1) #incidate it's a continued q and add "i"s to filename
                     
                     firstQuestionOnPage = False
                     noQuestionIndicator = False
                     continuedQuestion = False
-                    yValuesForQuestion.append(element.y1)
+                    yValuesForQuestion.append(element.y1) #add the question to crop for later
                     parsingQuestionNum += 1
-                elif re.search("^\(*\w?\)", stripped) and firstQuestionOnPage: #CASE 4 AND 5
+                elif re.search("^\(*\w?\)", stripped) and firstQuestionOnPage: #CASE 4 AND 5, if matches subquestion regex and is first subquestion on page
                     firstQuestionOnPage = False
                     noSubQuestionIndicator = False
-                    yValuesForSubQuestion.append(element.y1) #EVERY OTHER CONTINUED CASE
+                    yValuesForSubQuestion.append(element.y1) #add the subquestion to temp list, potentially crop for later
                     print("question:" , stripped, "end")
-                if not isNewMarkscheme and questionContinued.match(stripped): #CASE 4, 5
+                if not isNewMarkscheme and questionContinued.match(stripped): #CASE 4, 5, if old markscheme and matches Question _ continued
                     print("continued question")
                     continuedQuestion = True
-                    tempYForContinued = element.y1 #CASE 7
+                    tempYForContinued = element.y1 #CASE 7, set top of page to temp in case no subquestion trigger
                 
         else: #if it's a question paper
             if isinstance(element, LTTextBox):
-                print(element)
                 stripped = element.get_text().strip()
-                if(questionRegexMatch.match(element.get_text())):
+                if(questionRegexMatch.match(element.get_text())): #if there's a question number
                     firstQuestionOnPage = False
                     noQuestionIndicator = False
-                    if len(yValuesForSubQuestion) > 0:
-                        yValuesForQuestion.append(yValuesForSubQuestion[0])
-                        indexesOfOverflowQ.append(len(yValuesForQuestion) - 1)
-                    yValuesForQuestion.append(element.y1)
-                    print("question:" , repr(questionRegexMatch.match(element.get_text()).group()), "end")
-                elif(subQuestionRegexMatch.match(element.get_text()) and firstQuestionOnPage):
-                    yValuesForSubQuestion.append(element.y1)
-                    print("question:" , repr(subQuestionRegexMatch.match(element.get_text()).group()), "end")
-                elif(questionContinued.match(element.get_text())):
+                    if len(yValuesForSubQuestion) > 0: #if there were subquestions before the question trigger
+                        yValuesForQuestion.append(yValuesForSubQuestion[0]) #add the subquestion to crop for later
+                        indexesOfOverflowQ.append(len(yValuesForQuestion) - 1) #incidate it's a continued q and add "i"s to filename
+                    yValuesForQuestion.append(element.y1) #add the question to crop for later
+                elif(subQuestionRegexMatch.match(element.get_text()) and firstQuestionOnPage): #if subquestion and it's the first thing on page
+                    yValuesForSubQuestion.append(element.y1) #add the subquestion to temp list, potentially crop for later
+                elif(questionContinued.match(element.get_text())): #if (Question _ continued)
                     noQuestionIndicator = False
-                    print("next page: ", element.get_text(), "end")
-                    qNum = element.get_text().split(" ")[1]
-                    print("questionNum " + str(qNum))
-                    yValuesForQuestion.append(element.y1)
-                    indexesOfOverflowQ.append(len(yValuesForQuestion) - 1)
+                    qNum = element.get_text().split(" ")[1] #get the continued question num
+                    yValuesForQuestion.append(element.y1) #add text to crop for later
+                    indexesOfOverflowQ.append(len(yValuesForQuestion) - 1) #incidate it's a continued q and add "i"s to filename
+     
+    if noQuestionIndicator and isMarkscheme: #if no indicator and is markscheme, add the whole page
+        print("triggering no question indicator")
+        yValuesForQuestion.append(layout.height)
+        indexesOfOverflowQ.append(len(yValuesForQuestion) - 1)
     
-    if noQuestionIndicator: #if no indicator, add the whole page
-        print("somehow triggered noQuestion")
-        if isMarkscheme:
-            yValuesForQuestion.append(layout.height)
-            indexesOfOverflowQ.append(len(yValuesForQuestion) - 1)
-    
-    #if question paper or new markscheme
-    print("len(yValuesForQuestion)", len(yValuesForQuestion))
     yValuesForQuestion.sort(reverse=True) #ensures question y values are in order of the questions
-    for i in range(0, len(yValuesForQuestion)):
+    for i in range(0, len(yValuesForQuestion)): #loop through y values to crop
         #https://stackoverflow.com/a/465901
         output = PdfFileWriter()
         page1 = pdf_file.getPage(index)
 
-        if(i == len(yValuesForQuestion) - 1):
+        if(i == len(yValuesForQuestion) - 1): #if last question on page, crop till the bottom of page
             page1.cropBox.upperRight = (page1.mediaBox.getLowerLeft_x(), yValuesForQuestion[i])
             page1.cropBox.lowerLeft = (page1.mediaBox.getLowerRight_x(),  page1.mediaBox.getLowerRight_y())
-        else:
+        else: #crop till next question
             page1.cropBox.upperRight = (page1.mediaBox.getLowerLeft_x(), yValuesForQuestion[i])
             page1.cropBox.lowerLeft = (page1.mediaBox.getLowerRight_x(), yValuesForQuestion[i + 1])
             
@@ -161,6 +155,7 @@ for index, page in enumerate(PDFPage.get_pages(document)):
         with open(pdfOutputPath, "wb") as out_f:
             output.write(out_f)
         
+        #convert to jpg
         jpgOutputPath = outputFolder + "/jpgs/question_" + str(filenameQuestionNum) + contQuestionMarker + ".jpg"
         questionsJpg = convert_from_path(pdfOutputPath, use_cropbox=True)
         for jpg in questionsJpg:
