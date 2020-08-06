@@ -6,6 +6,8 @@ from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import PDFPageAggregator
 from pdfminer.pdfpage import PDFPage
 from pdfminer.layout import *
+from pdf2image import convert_from_path
+from PIL import Image
 
 """THREE CASES:
 1. <LTTextBoxVertical(30) 42.730,715.548,48.730,745.296 ' 1\n'>
@@ -25,11 +27,11 @@ CONTINUED CASES:
     no "Question _ continued" trigger
 """
 
-pdfName = "examsite/papers/cs2018Mq.pdf"
+pdfName = "examsite/papers/cs2018q.pdf"
 document = open(pdfName, "rb") #Create resource manager
 pdf_file = PdfFileReader(open(pdfName,"rb"))
 rsrcmgr = PDFResourceManager()
-laparams = LAParams(detect_vertical=True)#, line_margin=0.1) # detect_vertical allows q nums to be parsed as individual elements, line_margin allows parsed text to be in order
+laparams = LAParams(detect_vertical=True, line_margin=0.1) # detect_vertical allows q nums to be parsed as individual elements, line_margin allows parsed text to be in order
 device = PDFPageAggregator(rsrcmgr, laparams=laparams)
 interpreter = PDFPageInterpreter(rsrcmgr, device)
 
@@ -41,10 +43,10 @@ if isMarkscheme:
 outputFolder = "examsite/pdfParses/"
 outputFolder += "questionsOutput" if not isMarkscheme else "markschemeOutput"
 
-questionRegexMatch = re.compile(r"\d+\.")
+questionRegexMatch = re.compile(r"(\d+\.(\D|\s*$))") #ADDED (\D|\s*$) TO PREVENT THINGS LIKE "100.4" FROM MATCHING
 subQuestionRegexMatch = re.compile(r"\(\w\)")
 
-questionContinued = re.compile(r"Q*uestion \d+ continued")
+questionContinued = re.compile(r"\(*Q*uestion \d+ continued\)*")
 
 parsingQuestionNum = 0
 filenameQuestionNum = 0
@@ -67,7 +69,6 @@ for index, page in enumerate(PDFPage.get_pages(document)):
     for element in layout:
         if isMarkscheme: #if it is a markscheme
             if isinstance(element, LTTextBoxVertical): #CASE 1
-                print(element)
                 stripped = element.get_text().strip()
                 if re.search("^\d+", stripped) and int(stripped) == parsingQuestionNum + 1: #if it's number and corresponds to next q num 
                     print("case 1")
@@ -78,8 +79,6 @@ for index, page in enumerate(PDFPage.get_pages(document)):
                     parsingQuestionNum += 1
             elif isinstance(element, LTTextBoxHorizontal): #CASE 2 AND 3, CASE 4 AND 5
                 stripped = element.get_text().strip()
-                print(element)
-               # print("start", repr(stripped), "end")
                 if re.search("^\d+\.(\s+|$)", stripped): #CASE 2 AND 3
                     print("case 2 and 3")
                     print(stripped.split(".")[0])
@@ -108,10 +107,10 @@ for index, page in enumerate(PDFPage.get_pages(document)):
                     continuedQuestion = True
                     tempYForContinued = element.y1 #CASE 7
                 
-        else: #if it's a question paper or new markscheme
+        else: #if it's a question paper
             if isinstance(element, LTTextBox):
+                print(element)
                 stripped = element.get_text().strip()
-                # print("start: ", stripped, "end")
                 if(questionRegexMatch.match(element.get_text())):
                     firstQuestionOnPage = False
                     noQuestionIndicator = False
@@ -159,5 +158,14 @@ for index, page in enumerate(PDFPage.get_pages(document)):
         else:
             contQuestionMarker += "i"
 
-        with open(outputFolder + "/question_" + str(filenameQuestionNum) + contQuestionMarker + ".pdf", "wb") as out_f:
+        pdfOutputPath = outputFolder + "/question_" + str(filenameQuestionNum) + contQuestionMarker + ".pdf"
+        with open(pdfOutputPath, "wb") as out_f:
             output.write(out_f)
+        
+        jpgOutputPath = outputFolder + "/jpgs/question_" + str(filenameQuestionNum) + contQuestionMarker + ".jpg"
+        questionsJpg = convert_from_path(pdfOutputPath, use_cropbox=True)
+        for jpg in questionsJpg:
+            jpg.save(jpgOutputPath, "JPEG")
+
+
+        

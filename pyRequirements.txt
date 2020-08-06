@@ -1,0 +1,3 @@
+pdf2image==1.13.1
+pdfminer.six
+PyPDF2==1.26.0
