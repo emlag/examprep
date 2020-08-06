@@ -7,7 +7,6 @@ from pdfminer.converter import PDFPageAggregator
 from pdfminer.pdfpage import PDFPage
 from pdfminer.layout import *
 from pdf2image import convert_from_path
-from PIL import Image
 
 """THREE CASES:
 1. <LTTextBoxVertical(30) 42.730,715.548,48.730,745.296 ' 1\n'>
