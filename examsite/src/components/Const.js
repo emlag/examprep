@@ -626,7 +626,8 @@ export const TOPIC_DESCS = {
 };
 
 export const PAPER_FOLDER = "IBCS Past Papers";
-export const PAPER_YEARS = ["2014", "2015"];
+// export const PAPER_YEARS = ["2014", "2015"];
+export const PAPER_YEARS = ["2014"];
 export const PAPER_MAY = "May";
 export const PAPER_NOV = "Nov";
 export const PAPER_P1 = "P1";
@@ -634,6 +635,19 @@ export const PAPER_P2 = "P2";
 export const PAPER_P3 = "P3";
 export const PAPER_SL = "SL";
 export const PAPER_HL = "HL";
+
+export const PAPER_MONTHS = ["may", "nov"];
+export const PAPER_TYPES_SL = ["p1", "p2"];
+export const PAPER_TYPES_HL = ["p1", "p2", "p3"];
+export const PAPER_FILE_SL = [
+  "Computer_science_paper_1__SL.pdf",
+  "Computer_science_paper_2__SL.pdf"
+];
+export const PAPER_FILE_HL = [
+  "Computer_science_paper_1__HL.pdf",
+  "Computer_science_paper_2__HL.pdf",
+  "Computer_science_paper_3__HL.pdf"
+];
 
 export const PAPER_FILE_P1_SL = "Computer_science_paper_1__SL.pdf";
 export const PAPER_FILE_P1_HL = "Computer_science_paper_1__HL.pdf";

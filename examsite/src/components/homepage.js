@@ -9,7 +9,8 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { Link } from "react-router";
 import * as cnst from "./Const";
-import Pdf from "../../../IBCS Past Papers/2015/May/P1/HL/Computer_science_paper_1__SL.pdf";
+import * as firebase from "firebase";
+// import Pdf from "../../../IBCS Past Papers/2015/May/P1/HL/Computer_science_paper_1__SL.pdf";
 
 const title = {
   textAlign: "center",
@@ -29,7 +30,12 @@ class homepage extends Component {
     super(props); //since we are extending class Table so we have to use super in order to override Component class constructor
     this.state = {
       //state is by default an object
-      papers: { "0000": "blank" }
+      papers: { "0000": "blank" },
+      sl: [],
+      hl: [],
+      hlP1: "",
+      hlP2: "",
+      hlP3: ""
     };
   }
 
@@ -54,70 +60,104 @@ class homepage extends Component {
     // });
   }
 
-  getSL1() {
-    var link =
-      "../../../IBCS Past Papers" +
-      "/" +
-      cnst.PAPER_YEARS[0] +
-      "/" +
-      cnst.PAPER_MAY +
-      "/" +
-      cnst.PAPER_P1 +
-      "/" +
-      cnst.PAPER_HL +
-      "/" +
-      cnst.PAPER_FILE_P1_SL;
-
-    // return (
-    //   <Link to={link} activeClassName="current">
-    //     SLP1
-    //   </Link>
-    // );
-    return (
-      <a href={Pdf} target="_blank">
-        SLP1
-      </a>
-    );
-
-    // return <a href="https://example.com/faq.html"> SLP1 </a>;
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    // if (this.state.slP1 !== prevState.slP1) {
+    //   console.log("state updated");
+    // }
+    // console.log("updated");
   }
 
-  getSL2() {
-    return "SLP2";
-  }
+  setPaperStates(monthRef) {
+    var storageRef = firebase.storage().ref();
+    var fileRef = storageRef
+      .child("papers")
+      .child("2014")
+      .child("may")
+      .child("p1")
+      .child("sl")
+      .child(cnst.PAPER_FILE_P1_SL);
 
-  getHL1() {
-    return "HLP1";
-  }
+    for (const type of cnst.PAPER_TYPES_SL) {
+      var typeRef = monthRef.child(type).child("sl");
+      cnst.PAPER_FILE_SL.map((name, idx) => {
+        var paperRef = typeRef.child(name);
+        paperRef
+          .getDownloadURL()
+          .then(url => {
+            this.setState(prevState => ({
+              sl: [...prevState.sl, url]
+            }));
+          })
+          .catch(function(error) {
+            switch (error.code) {
+              case "storage/object-not-found":
+                // File doesn't exist
+                break;
+            }
+          });
+      });
+    }
 
-  getHL2() {
-    return "HLP2";
-  }
+    for (const type of cnst.PAPER_TYPES_HL) {
+      var typeRef = monthRef.child(type).child("hl");
+      cnst.PAPER_FILE_HL.map((name, idx) => {
+        var paperRef = typeRef.child(name);
+        paperRef
+          .getDownloadURL()
+          .then(url => {
+            this.setState(prevState => ({
+              hl: [...prevState.hl, url]
+            }));
+          })
+          .catch(function(error) {
+            switch (error.code) {
+              case "storage/object-not-found":
+                // File doesn't exist
+                break;
+            }
+          });
+      });
+    }
 
-  getHL3() {
-    return "HLP3";
+    // fileRef.getDownloadURL().then(url => {
+    //   // Insert url into an <img> tag to "download"
+    //   // return <a href={url}> SLP1 </a>;
+    //   console.log("url:", url);
+    //   this.setState({ slP1: url });
+    // });
   }
 
   buildTable = years => {
-    const yearRows = years.map((year, idx) => {
-      return (
-        <tr key={idx}>
-          <td style={table}>{year}</td>
-          <td style={table}>{this.getSL1()}</td>
-          <td style={table}>{this.getSL2()}</td>
-          <td style={table}>{this.getHL1()}</td>
-          <td style={table}>{this.getHL2()}</td>
-          <td style={table}>{this.getHL3()}</td>
-
-          {/* <td style={table}>{this.getSL1()}</td>
-          <td style={table}>{this.getSL2()}</td>
-          <td style={table}>{this.getHL1()}</td>
-          <td style={table}>{this.getHL2()}</td>
-          <td style={table}>{this.getHL3()}</td> */}
-        </tr>
-      );
+    const yearData = years.map((year, idx) => {
+      var storageRef = firebase.storage().ref();
+      var fileRef = storageRef.child("papers").child(year);
+      const monthData = cnst.PAPER_MONTHS.map((month, idx) => {
+        fileRef.child(month);
+        this.setPaperStates(fileRef);
+        return (
+          <tr key={idx}>
+            <td style={table}>{year}</td>
+            <td style={table}>
+              <a href={this.state.sl[0]}> SLP1 </a>
+            </td>
+            <td style={table}>
+              <a href={this.state.sl[1]}> SLP2 </a>
+            </td>
+            <td style={table}>
+              <a href={this.state.hl[0]}> HLP1 </a>
+            </td>
+            <td style={table}>
+              <a href={this.state.hl[1]}> HLP2 </a>
+            </td>
+            <td style={table}>
+              <a href={this.state.hl[2]}> HLP3 </a>
+            </td>
+          </tr>
+        );
+      });
+      return monthData;
     });
-    return yearRows;
+    return yearData;
   };
 
   render() {
