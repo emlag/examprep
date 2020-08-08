@@ -6,12 +6,13 @@ import React, { memo, useState } from "react";
 import * as firebase from "firebase";
 import * as cnst from "./Const";
 import QuestionModal from "./QuestionModal";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 
 const Leaf = memo(({ children, name, subtopic, style, defaultOpen = false }) => {
   const [isOpen, setOpen] = useState(defaultOpen);
   const previous = usePrevious(isOpen);
-  const [info, setInfo] = useState("--");
+  const [infoFound, setInfoFound] = useState(true);
   const [allInfo, setAllInfo] = useState([]);
 
   const [bind, { height: viewHeight }] = useMeasure();
@@ -57,11 +58,29 @@ const Leaf = memo(({ children, name, subtopic, style, defaultOpen = false }) => 
                 }
             });
 
+            if (infoFound === undefined || infoFound.length == 0) {
+                setInfoFound(false);
+            }
             setAllInfo(infoFound);
         });
     };
 
   function allInfoDivs() {
+
+      if(!infoFound) {
+          return (
+              <div style={{ color: "red" }}>
+                  No Questions Found for this Subtopic :(
+              </div>
+          )
+      }
+
+      if (allInfo === undefined || allInfo.length == 0) {
+          return (
+              <CircularProgress />
+          )
+      }
+
       const divs = allInfo.map((data, idx) => {
           const title = data.year + " " + data.session + " " + "P" + data.paperType + data.level + " " + "Q" + data.questionNum;
           return (
