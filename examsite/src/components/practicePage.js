@@ -12,6 +12,8 @@ import Container from '@material-ui/core/Container';
 import Button from "@material-ui/core/Button";
 import * as firebase from "firebase";
 import * as cnst from "./Const";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import LinearProgress from "@material-ui/core/LinearProgress";
 
 
 //venturing into styled components.
@@ -44,9 +46,9 @@ export default function practicePage() {
     });
 
     const [objFromDB, setObjFromDB] = useState({
-        answerImageUrls:[],
-        questionImageUrls:[],
-        questionNum:"",
+        answerImageUrls: [],
+        questionImageUrls: [],
+        questionNum: "",
         subtopicMetadata: "",
         topics: "",
         subtopics: "",
@@ -55,6 +57,8 @@ export default function practicePage() {
         year: "",
         session: ""
     })
+
+    const [isLoading, setIsLoading] = useState(false);
 
     //change the current state for one of the checkboxes
     const handleChange = (event, topicName) => {
@@ -76,6 +80,7 @@ export default function practicePage() {
 
     function onSearch() {
         const db = firebase.firestore();
+        setIsLoading(true);
 
         console.log(state.allChecked);
 
@@ -93,15 +98,26 @@ export default function practicePage() {
 
                 const isEmpty = fromDB === undefined || fromDB.length == 0;
 
-                if (!isEmpty){
+                if (!isEmpty) {
                     let randomImageNum = getRandomIntInclusive(0, fromDB.length);
                     const toShow = fromDB[randomImageNum]
                     setObjFromDB(toShow);
                 }
+
+                setIsLoading(false);
             })
             .catch((error) => {
                 console.log("Error getting documents: ", error);
+                setIsLoading(false);
             });
+    }
+
+    const showLoading = () => {
+        if (isLoading) {
+            return (
+                <CircularProgress/>
+            )
+        }
     }
 
     return (
@@ -137,6 +153,8 @@ export default function practicePage() {
                         }}>
                             Search
                         </Button>
+
+                        {showLoading()}
                     </FormControl>
                     <FormControl component="fieldset" className={classes.formControl}>
                         <FormGroup>
