@@ -24,7 +24,9 @@ class CreateQuestion extends Component {
             questionNum: 0,
             subtopicMetadata: '',
             questionImages: [],
-            answerImages: []
+            answerImages: [],
+            pdfFiles: [],
+            markscheme: 'Yes'
         }
     }
 
@@ -47,10 +49,21 @@ class CreateQuestion extends Component {
             questionNum: 0,
             subtopicMetadata: '',
             questionImages: [],
-            answerImages: []
+            answerImages: [],
+            pdfFiles: [],
+            markscheme: 'Yes'
         })
     }
   
+    temp = () => {
+        var storage = firebase.storage();
+        storage.ref('parsed/answers/1').getDownloadURL().then(function(url) {
+
+        var img = document.getElementById('myimg');
+        img.src = url;
+        });
+    }
+
     increaseCount = (itemToChange) => {
         if(itemToChange === cnst.SUBTOPIC_KEY) {
             this.setState((prevState) => ({
@@ -130,8 +143,8 @@ class CreateQuestion extends Component {
         }
         return (
             <div>
-                {display.map(item => {
-                    return <div>{item}</div>
+                {display.map((item, idx) => {
+                    return <div key={idx}>{item}</div>
                 })}
             </div>
         );
@@ -150,7 +163,7 @@ class CreateQuestion extends Component {
         }
         return (
             <div>
-                {display.map(item, idx => {
+                {display.map((item, idx) => {
                     return <div key={idx}>{item}</div>
                 })}
             </div>
@@ -205,6 +218,55 @@ class CreateQuestion extends Component {
         return id;
     }
 
+    uploadPdf = (callback) => {
+        const storage = firebase.storage();
+        const fileName = Date.now() + ".pdf";
+        this.state.pdfFiles.forEach(pdf => {
+            const pdfRefName = `uploadedPdfs/${fileName}`;
+            const uploadTask = storage.ref(pdfRefName).put(pdf);
+            uploadTask.on('state_changed',
+                () => {}, //cancel function
+                (error) => {
+                    // error function ....
+                    console.log(error);
+                },
+                () => {
+                    //complete function
+                    console.log("completed upload of pdf");
+                    callback(fileName);
+                }
+            )
+        });
+    }
+
+    fetchRequestParse = (filename) => {
+        const token = getCookie('csrftoken'); //this is needed to prevent 403 Forbidden
+        var isMarkscheme = true ? this.state.markscheme === "Yes" : false
+        console.log(isMarkscheme)
+        fetch(`/create/${filename}`, {
+            method: 'PUT',
+            headers: {
+                'X-CSRFToken': token
+            },
+            body: JSON.stringify({
+                filename: filename,
+                year: this.state.year,
+                isMarkscheme: isMarkscheme
+            })
+        }).then(response => {
+            if (!response.ok) {
+                throw Error(response.statusText);
+            } else {
+                return response.json();
+            }
+        }).then(data => {
+            console.log("pdf updated successfully");
+        }).catch(err => {
+            console.log("pdf not updated/uploaded");
+            console.log(err);
+        })
+    }
+
     uploadImages = (key) => {
         console.log("uploadImages(), questionImages: " + this.state.questionImages);
         console.log("uploadImages(), answerImages: " + this.state.answerImages);
@@ -215,60 +277,68 @@ class CreateQuestion extends Component {
             const imageRefName = `questions/${Date.now()}`;
             const uploadTask = storage.ref(imageRefName).put(image);
             uploadTask.on('state_changed',
-            () => {},
-            (error) => {
-                // error function ....
-                console.log(error);
-            },
-            () => {
-                
-                storage.ref(imageRefName).getDownloadURL().then(url => {
-                    console.log("got download URL");
-                    firebase
-                    .firestore()
-                    .collection(cnst.DATABASE_BRANCH).doc(key)
-                    .update({
-                        //https://firebase.google.com/docs/firestore/manage-data/add-data#update_elements_in_an_array
-                        questionImageUrls: firebase.firestore.FieldValue.arrayUnion(url)
-                    });
-                })
-            });
+                () => {}, //next function
+                (error) => {
+                    // error function
+                    console.log(error);
+                },
+                () => { //complete function
+                    storage.ref(imageRefName).getDownloadURL().then(url => {
+                        console.log("got download URL");
+                        firebase
+                        .firestore()
+                        .collection(cnst.DATABASE_BRANCH).doc(key)
+                        .update({
+                            //https://firebase.google.com/docs/firestore/manage-data/add-data#update_elements_in_an_array
+                            questionImageUrls: firebase.firestore.FieldValue.arrayUnion(url)
+                        });
+                    })
+                }
+            );
         })
 
         this.state.answerImages.forEach((image, index) => {
             const imageRefName = `answers/${Date.now()}`;
             const uploadTask = storage.ref(imageRefName).put(image);
             uploadTask.on('state_changed',
-            () => {},
-            (error) => {
-                // error function ....
-                console.log(error);
-            },
-            () => {
-                storage.ref(imageRefName).getDownloadURL().then(url => {
-                    console.log("got download URL answer");
-                    firebase
-                    .firestore()
-                    .collection(cnst.DATABASE_BRANCH).doc(key)
-                    .update(
-                    {
-                        //https://firebase.google.com/docs/firestore/manage-data/add-data#update_elements_in_an_array
-                        answerImageUrls: firebase.firestore.FieldValue.arrayUnion(url)
-                    });
-                    
-                })
-            });
+                () => {}, //next function
+                (error) => {
+                    // error function ....
+                    console.log(error);
+                },
+                () => { //complete function
+                    storage.ref(imageRefName).getDownloadURL().then(url => {
+                        console.log("got download URL answer");
+                        firebase
+                        .firestore()
+                        .collection(cnst.DATABASE_BRANCH).doc(key)
+                        .update(
+                        {
+                            //https://firebase.google.com/docs/firestore/manage-data/add-data#update_elements_in_an_array
+                            answerImageUrls: firebase.firestore.FieldValue.arrayUnion(url)
+                        });
+                    })
+                }
+            );
         })
-        
-        
+    }
+
+    submitPdf = event => {
+        event.preventDefault();
+        // https://stackoverflow.com/a/13455303
+        this.uploadPdf((result) => {
+            console.log("onComplete", result);
+            // this.downloadPdf(result)
+            this.fetchRequestParse(result)
+        });
     }
 
     submitForm = e => {
         e.preventDefault();
-
+    
         const dataKey = this.uploadData();
         this.uploadImages(dataKey);
-          //this.clearInputFields(e); TODO: SHOULD I CALL THIS OR NOT?  BECAUSE UI DISPLAY IS NOT CLEARED
+          this.clearInputFields(e); //TODO: SHOULD I CALL THIS OR NOT?  BECAUSE UI DISPLAY IS NOT CLEARED
     }
 
     render() {
@@ -276,6 +346,10 @@ class CreateQuestion extends Component {
             <div className="create-form-container">
                 <Form onSubmit={(event)=>this.submitForm(event)}>
                     <Row form>
+                        <div>
+                            <img id="myimg"/>
+                            {this.temp()}
+                        </div>
                         <Col md={3}>
                             <FormGroup>
                                 <Label for="paperTypeSelect">Paper Type</Label>
@@ -373,6 +447,36 @@ class CreateQuestion extends Component {
                     <Button color="danger" onClick={() => this.decreaseCount(cnst.SUBTOPIC_KEY)}>Remove Subtopic</Button>
                     </Col>
                     </Row>
+                    <FormGroup>
+                        <Label for="exampleCustomFileBrowser">PDF Upload</Label>
+                        <CustomInput type="file"
+                                    multiple
+                                     id="exampleCustomFileBrowser"
+                                     name="customFile"
+                                     label="Pick a pdf to upload"
+                                     onChange={
+                                        (event)=> {
+                                            this.setState({
+                                                pdfFiles: [...event.target.files]
+                                            })
+                                        }
+                                     }
+                        />
+                    </FormGroup>
+                    <Col md={3}>
+                        <FormGroup>
+                            <Label for="markschemeSelect">Is it a markscheme?</Label>
+                            <Input type="select" name="select" id="markschemeSelect" onChange={(event)=> {
+                                this.setState({
+                                    markscheme: event.target.value
+                                })
+                            }}>
+                                <option>Yes</option>
+                                <option>No</option>
+                            </Input>
+                        </FormGroup>
+                    </Col>
+                    <Button color="primary" onClick={(event) => this.submitPdf(event)}>Upload and Parse PDF</Button>
                     <FormGroup>
                         <Label for="exampleCustomFileBrowser">Question Image</Label>
                         <CustomInput type="file"
