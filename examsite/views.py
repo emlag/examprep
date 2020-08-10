@@ -1,9 +1,11 @@
+import json
 from django.contrib.auth import authenticate
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render
 from django.urls import reverse
+from .src.pdf_scraper_new import parse_pdf_util
 
 from .models import User
 
@@ -63,8 +65,18 @@ def login_view(request):
     else:
         return render(request, "examsite/login.html")
 
-
-
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
+
+def parse_pdf(request, filename):
+    if request.method == "PUT":
+        data = json.loads(request.body)
+        parse_pdf_util(data["filename"], data["year"], data["isMarkscheme"])
+        return JsonResponse({
+            "success": "pdf updated"
+        }, safe=False)
+    else:
+        return JsonResponse({
+            "error": "PUT request required."
+        }, status=400)
