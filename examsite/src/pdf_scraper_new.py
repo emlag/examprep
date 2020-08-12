@@ -35,7 +35,8 @@ CONTINUED CASES:
 #MAKE THIS TO views.py AND RECEIVE FETCH REQUEST FROM JS INCLUDING THE PDF, THEN PROCESS PDF WITH THIS CODE, AND THEN SEND BACK HTTP RESPONSE WITH JSON OF STRINGS
 #DOWNLOAD PDF HERE
 
-def parse_pdf_util(filename, year, isMarkscheme):
+#data["paperType"], data["year"], data["session"], data["level"], data["filename"], data["isMarkscheme"]
+def parse_pdf_util(paperType, year, session, level, filename, pageStartNum, isMarkscheme):
     #download_pdf(filename)
 
     # https://stackoverflow.com/a/38642680
@@ -62,8 +63,9 @@ def parse_pdf_util(filename, year, isMarkscheme):
     
     # #config output path folders
     outputFolder = "parsed/"
+    outputFolder += str(session) + year[2:] + level + "P" + str(paperType) + "/"
     outputFolder += "questions/" if not isMarkscheme else "answers/"
-
+    
     #regex matches to check for questions and subquestions
     questionRegexMatch = re.compile(r"(\d+\.(\D|\s*$))") #EDIT: ADDED (\D|\s*$) TO PREVENT THINGS LIKE "100.4" FROM MATCHING
     subQuestionRegexMatch = re.compile(r"\(\w\)")
@@ -75,6 +77,8 @@ def parse_pdf_util(filename, year, isMarkscheme):
     contQuestionMarker = ""
 
     for index, page in enumerate(PDFPage.get_pages(tempPdf)): #parse page by page
+        if index < (int(pageStartNum) - 1):
+            continue
         firstQuestionOnPage = True #used mainly for subquestion checking so it only adds the first subquestion's y value of a question, keeps the other subqs in 1 image
         noQuestionIndicator = True #whether or not there's a question trigger for this whole page
         noSubQuestionIndicator = True #whether or not there's a subquestion trigger for continuedQuestion
@@ -99,7 +103,6 @@ def parse_pdf_util(filename, year, isMarkscheme):
                 elif isinstance(element, LTTextBoxHorizontal): #CASE 2 AND 3, CASE 4 AND 5
                     stripped = element.get_text().strip()
                     if re.search("^\d+\.(\s+|$)", stripped): #CASE 2 AND 3
-                        
                         if continuedQuestion or (isNewMarkscheme and len(yValuesForSubQuestion) > 0): #CASE 4 AND 5 AND 6 OR CASE 8
                             if (not isNewMarkscheme and len(yValuesForSubQuestion) > 0) \
                                 or (isNewMarkscheme and yValuesForSubQuestion[0] > element.y1): #if old markscheme and there's subquestions, or if new markscheme and the subquestion is above currently parsed question
@@ -169,9 +172,6 @@ def parse_pdf_util(filename, year, isMarkscheme):
             tempQ = open(filepath, "wb")
             output.write(tempQ)
             tempQ.seek(0) #go back to beginning of file
-            # tempQRead = open(filepath, "rb")
-            # upload_blob = bucket.blob(outputFolder + filename)
-            # upload_blob.upload_from_file(tempQRead)
 
             questionsJpg = convert_from_path(filepath, use_cropbox=True)
             for jpg in questionsJpg:
@@ -184,6 +184,6 @@ def parse_pdf_util(filename, year, isMarkscheme):
  
             os.remove(filepath)
             
-    tempPdf.close()        
+    tempPdf.close()
 
         

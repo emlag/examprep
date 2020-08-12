@@ -72,7 +72,7 @@ def logout_view(request):
 def parse_pdf(request, filename):
     if request.method == "PUT":
         data = json.loads(request.body)
-        parse_pdf_util(data["filename"], data["year"], data["isMarkscheme"])
+        parse_pdf_util(data["paperType"], data["year"], data["session"], data["level"], data["filename"], data["pageStartNum"], data["isMarkscheme"])
         return JsonResponse({
             "success": "pdf updated"
         }, safe=False)

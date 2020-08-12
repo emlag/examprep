@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {CustomInput, Form, FormGroup, FormText, Label, Input, Button, Alert, Col, Row} from 'reactstrap';
+import LoadingOverlay from 'react-loading-overlay';
 import {getCookie} from "./Utils";
 import * as cnst from "./Const"
 import * as firebase from "firebase";
@@ -22,10 +23,12 @@ class CreateQuestion extends Component {
             subtopics: {},
             subtopicCount: 0,
             questionNum: 0,
+            pageStartNum: 0,
             subtopicMetadata: '',
             questionImages: [],
             answerImages: [],
             pdfFiles: [],
+            parsing: false,
             markscheme: 'Yes'
         }
     }
@@ -47,17 +50,19 @@ class CreateQuestion extends Component {
             subtopics: {},
             subtopicCount: 0,
             questionNum: 0,
+            pageStartNum: 0,
             subtopicMetadata: '',
             questionImages: [],
             answerImages: [],
             pdfFiles: [],
+            parsing: false,
             markscheme: 'Yes'
         })
     }
   
     temp = () => {
         var storage = firebase.storage();
-        storage.ref('parsed/answers/1').getDownloadURL().then(function(url) {
+        storage.ref('/parsed/May14HLP1/answers/0i.jpg').getDownloadURL().then(function(url) {
 
         var img = document.getElementById('myimg');
         img.src = url;
@@ -219,8 +224,17 @@ class CreateQuestion extends Component {
     }
 
     uploadPdf = (callback) => {
+        this.setState({
+            parsing: true
+        })
         const storage = firebase.storage();
-        const fileName = Date.now() + ".pdf";
+        var markscheme = ""
+        if(this.state.markscheme === "Yes") {
+            markscheme = "M"
+        }
+        // var markscheme = "M" ? this.state.markscheme === "Yes" : "" somehow this doesnt work, it becomes "false"
+        const fileName = this.state.session + this.state.year.toString().slice(-2) + this.state.level + "P" + this.state.paperType + markscheme + ".pdf"
+        
         this.state.pdfFiles.forEach(pdf => {
             const pdfRefName = `uploadedPdfs/${fileName}`;
             const uploadTask = storage.ref(pdfRefName).put(pdf);
@@ -249,8 +263,12 @@ class CreateQuestion extends Component {
                 'X-CSRFToken': token
             },
             body: JSON.stringify({
-                filename: filename,
+                paperType: this.state.paperType,
                 year: this.state.year,
+                session: this.state.session,
+                level: this.state.level,
+                filename: filename,
+                pageStartNum: this.state.pageStartNum,
                 isMarkscheme: isMarkscheme
             })
         }).then(response => {
@@ -261,9 +279,16 @@ class CreateQuestion extends Component {
             }
         }).then(data => {
             console.log("pdf updated successfully");
+            this.setState({
+                parsing: false
+            })
         }).catch(err => {
             console.log("pdf not updated/uploaded");
             console.log(err);
+            this.setState({
+                parsing: false
+            })
+            alert("pdf not uploaded");
         })
     }
 
@@ -343,6 +368,7 @@ class CreateQuestion extends Component {
 
     render() {
         return (
+            <LoadingOverlay active={this.state.parsing} spinner text="Parsing your Pdf">
             <div className="create-form-container">
                 <Form onSubmit={(event)=>this.submitForm(event)}>
                     <Row form>
@@ -412,19 +438,64 @@ class CreateQuestion extends Component {
                                 </Input>
                             </FormGroup>
                         </Col>
+                    </Row>
+                    <FormGroup>
+                        <Label for="exampleCustomFileBrowser">PDF Upload</Label>
+                        <CustomInput type="file"
+                                    multiple
+                                        id="exampleCustomFileBrowser"
+                                        name="customFile"
+                                        label="Pick a pdf to upload"
+                                        onChange={
+                                        (event)=> {
+                                            this.setState({
+                                                pdfFiles: [...event.target.files]
+                                            })
+                                        }
+                                        }
+                        />
+                    </FormGroup>
+                    <Row>
                         <Col md={3}>
                             <FormGroup>
-                                <Label htmlFor="questionNum">Question Number</Label>
+                                <Label for="markschemeSelect">Is it a markscheme?</Label>
+                                <Input type="select" name="select" id="markschemeSelect" onChange={(event)=> {
+                                    this.setState({
+                                        markscheme: event.target.value
+                                    })
+                                }}>
+                                    <option>Yes</option>
+                                    <option>No</option>
+                                </Input>
+                            </FormGroup>
+                        </Col>
+                        <Col md={3}>
+                            <FormGroup>
+                                <Label htmlFor="questionNum">Page where Section A starts (eg. if it starts on page 3, input 3)</Label>
                                 <Input type="number" min="1" className="form-control" id="questionNumber"
                                 onBlur={(event)=> {
                                     this.setState({
-                                        questionNum: event.target.value
+                                        pageStartNum: event.target.value
                                     })
                                 }}
                                 />
                             </FormGroup>
                         </Col>
                     </Row>
+                    <Button color="primary" onClick={(event) => this.submitPdf(event)}>Upload and Parse PDF</Button>
+                    <br/>
+                    <Col md={3}>
+                        <FormGroup>
+                            <Label htmlFor="questionNum">Question Number</Label>
+                            <Input type="number" min="1" className="form-control" id="questionNumber"
+                            onBlur={(event)=> {
+                                this.setState({
+                                    questionNum: event.target.value
+                                })
+                            }}
+                            />
+                        </FormGroup>
+                    </Col>
                     <div className="form-group">
                         <label htmlFor="subtopicMetadata">Subtopics Metadata</label>
                         <textarea className="form-control" id="subtopicMetadata" rows="3"
@@ -447,71 +518,12 @@ class CreateQuestion extends Component {
                     <Button color="danger" onClick={() => this.decreaseCount(cnst.SUBTOPIC_KEY)}>Remove Subtopic</Button>
                     </Col>
                     </Row>
-                    <FormGroup>
-                        <Label for="exampleCustomFileBrowser">PDF Upload</Label>
-                        <CustomInput type="file"
-                                    multiple
-                                     id="exampleCustomFileBrowser"
-                                     name="customFile"
-                                     label="Pick a pdf to upload"
-                                     onChange={
-                                        (event)=> {
-                                            this.setState({
-                                                pdfFiles: [...event.target.files]
-                                            })
-                                        }
-                                     }
-                        />
-                    </FormGroup>
-                    <Col md={3}>
-                        <FormGroup>
-                            <Label for="markschemeSelect">Is it a markscheme?</Label>
-                            <Input type="select" name="select" id="markschemeSelect" onChange={(event)=> {
-                                this.setState({
-                                    markscheme: event.target.value
-                                })
-                            }}>
-                                <option>Yes</option>
-                                <option>No</option>
-                            </Input>
-                        </FormGroup>
-                    </Col>
-                    <Button color="primary" onClick={(event) => this.submitPdf(event)}>Upload and Parse PDF</Button>
-                    <FormGroup>
-                        <Label for="exampleCustomFileBrowser">Question Image</Label>
-                        <CustomInput type="file"
-                                    multiple
-                                     id="exampleCustomFileBrowser"
-                                     name="customFile"
-                                     label="Pick image files for the question"
-                                     onChange={
-                                        (event)=> {
-                                            this.setState({
-                                                questionImages: [...event.target.files]
-                                            })
-                                        }
-                                     }
-                        />
-                    </FormGroup>
-                    <FormGroup>
-                        <Label for="exampleCustomFileBrowser">Answer Image</Label>
-                        <CustomInput type="file"
-                                    multiple
-                                    id="exampleCustomFileBrowser"
-                                    name="customFile"
-                                    label="Pick image files for the answers"
-                                    onChange={
-                                        (event)=> {
-                                            this.setState({
-                                                answerImages: [...event.target.files]
-                                            })
-                                        }
-                                     }/>
-                    </FormGroup>
+                    <br/>
                     <Button color="primary" type="submit">Save Question</Button>
                 </Form>
                 
             </div>
+            </LoadingOverlay>
         );
     }
 }
