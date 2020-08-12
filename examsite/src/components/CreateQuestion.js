@@ -130,8 +130,8 @@ class CreateQuestion extends Component {
         }
         return (
             <div>
-                {display.map(item => {
-                    return <div>{item}</div>
+                {display.map((item, idx) => {
+                    return <div key={idx}>{item}</div>
                 })}
             </div>
         );
@@ -150,7 +150,7 @@ class CreateQuestion extends Component {
         }
         return (
             <div>
-                {display.map(item, idx => {
+                {display.map((item, idx) => {
                     return <div key={idx}>{item}</div>
                 })}
             </div>
