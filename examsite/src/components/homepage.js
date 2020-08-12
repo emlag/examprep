@@ -17,6 +17,8 @@ const title = {
   fontFamily: "Arial"
 };
 
+var i = 0;
+
 const table = {
   textAlign: "center",
   fontFamily: "Arial",
@@ -30,12 +32,8 @@ class homepage extends Component {
     super(props); //since we are extending class Table so we have to use super in order to override Component class constructor
     this.state = {
       //state is by default an object
-      papers: { "0000": "blank" },
       sl: [],
-      hl: [],
-      hlP1: "",
-      hlP2: "",
-      hlP3: ""
+      hl: []
     };
   }
 
@@ -67,7 +65,7 @@ class homepage extends Component {
     // console.log("updated");
   }
 
-  setPaperStates(monthRef) {
+  setPaperStates = monthRef => {
     var storageRef = firebase.storage().ref();
     var fileRef = storageRef
       .child("papers")
@@ -81,12 +79,17 @@ class homepage extends Component {
       var typeRef = monthRef.child(type).child("sl");
       cnst.PAPER_FILE_SL.map((name, idx) => {
         var paperRef = typeRef.child(name);
+        // console.log("reference:", paperRef.fullPath);
+
         paperRef
           .getDownloadURL()
           .then(url => {
-            this.setState(prevState => ({
-              sl: [...prevState.sl, url]
-            }));
+            // this.setState(prevState => ({
+            //   sl: [...prevState.sl, url]
+            // }));
+            this.setState({
+              sl: [...this.state.sl, url]
+            });
           })
           .catch(function(error) {
             switch (error.code) {
@@ -104,10 +107,14 @@ class homepage extends Component {
         var paperRef = typeRef.child(name);
         paperRef
           .getDownloadURL()
+          //infinite loop caused by setState
           .then(url => {
-            this.setState(prevState => ({
-              hl: [...prevState.hl, url]
-            }));
+            // this.setState(prevState => ({
+            //   hl: [...prevState.hl, url]
+            // }));
+            this.setState({
+              hl: [...this.state.hl, url]
+            });
           })
           .catch(function(error) {
             switch (error.code) {
@@ -118,44 +125,48 @@ class homepage extends Component {
           });
       });
     }
-
-    // fileRef.getDownloadURL().then(url => {
-    //   // Insert url into an <img> tag to "download"
-    //   // return <a href={url}> SLP1 </a>;
-    //   console.log("url:", url);
-    //   this.setState({ slP1: url });
-    // });
-  }
+  };
 
   buildTable = years => {
     const yearData = years.map((year, idx) => {
       var storageRef = firebase.storage().ref();
       var fileRef = storageRef.child("papers").child(year);
-      const monthData = cnst.PAPER_MONTHS.map((month, idx) => {
-        fileRef.child(month);
-        this.setPaperStates(fileRef);
-        return (
-          <tr key={idx}>
-            <td style={table}>{year}</td>
-            <td style={table}>
-              <a href={this.state.sl[0]}> SLP1 </a>
-            </td>
-            <td style={table}>
-              <a href={this.state.sl[1]}> SLP2 </a>
-            </td>
-            <td style={table}>
-              <a href={this.state.hl[0]}> HLP1 </a>
-            </td>
-            <td style={table}>
-              <a href={this.state.hl[1]}> HLP2 </a>
-            </td>
-            <td style={table}>
-              <a href={this.state.hl[2]}> HLP3 </a>
-            </td>
-          </tr>
-        );
-      });
-      return monthData;
+
+      for (const month of cnst.PAPER_MONTHS) {
+        console.log(i++);
+        var monthRef = fileRef.child(month);
+        this.setPaperStates(monthRef);
+      }
+
+      console.log("s state:", this.state.sl);
+      console.log("hl state:", this.state.hl);
+
+      // const monthData = cnst.PAPER_MONTHS.map((month, idx) => {
+      //   console.log(i++);
+      //   var monthRef = fileRef.child(month);
+      //   this.setPaperStates(monthRef);
+      //   return (
+      //     <tr key={idx}>
+      //       <td style={table}>{year}</td>
+      //       <td style={table}>
+      //         <a href={this.state.sl[0]}> SLP1, {this.state.sl[0]} </a>
+      //       </td>
+      //       <td style={table}>
+      //         <a href={this.state.sl[1]}> SLP2, {this.state.sl[1]}</a>
+      //       </td>
+      //       <td style={table}>
+      //         <a href={this.state.hl[2]}> HLP1, {this.state.hl[2]}</a>
+      //       </td>
+      //       <td style={table}>
+      //         <a href={this.state.hl[1]}> HLP2, {this.state.hl[1]}</a>
+      //       </td>
+      //       <td style={table}>
+      //         <a href={this.state.hl[0]}> HLP3, {this.state.hl[0]}</a>
+      //       </td>
+      //     </tr>
+      //   );
+      // });
+      // return monthData;
     });
     return yearData;
   };
